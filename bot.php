@@ -1,12 +1,6 @@
 <?php
-/*
-کانال سورس سرچ
-پر از سورس کد انواع ربات های تلگرامی!
-http://t.me/source_search
-www.sourcesearch.ir
-*/
-ob_start();
-define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
+$admin = "710732845"; # -- Admin -- #
+define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA'); # -- Token -- #
 function bot($method,$datas=[]){
     $url = "https://api.telegram.org/bot".API_KEY."/".$method;
     $ch = curl_init();
@@ -17,214 +11,121 @@ function bot($method,$datas=[]){
     if(curl_error($ch)){
         var_dump(curl_error($ch));
     }else{
-        return json_decode($res);
+        return json_decode($res,true);
     }
 }
-//============== source search ================
-function SendMessage($chatid,$text,$parsmde,$disable_web_page_preview,$keyboard){
-    bot('sendMessage',[
-        'chat_id'=>$chatid,
-        'text'=>$text,
-        'parse_mode'=>$parsmde,
-        'disable_web_page_preview'=>$disable_web_page_preview,
-        'reply_markup'=>$keyboard
-    ]);
+function send($chat_id,$text,$rep=0){
+	$return = bot('sendMessage',[
+		'chat_id'=>$chat_id,
+		'text'=>$text,
+		'reply_to_message_id'=>$rep,
+		'parse_mode'=>'MarkDown'
+	]);
+	return $return;
 }
-function sendVideo ($chat_id,$video,$caption,$keyboard){
-    bot('sendVideo',array(
-        'chat_id'=>$chat_id,
-        'video'=>$video,
-        'caption'=>$caption,
-        'reply_markup'=>$keyboard
-    ));
-}
-function Forward($KojaShe,$AzKoja,$KodomMSG)
-{
-    bot('ForwardMessage',[
-        'chat_id'=>$KojaShe,
-        'from_chat_id'=>$AzKoja,
-        'message_id'=>$KodomMSG
-    ]);
-}
-function SendPhoto($chatid,$photo,$keyboard,$caption){
-  bot('SendPhoto',[
-  'chat_id'=>$chatid,
-  'photo'=>$photo,
-  'caption'=>$caption,
-  'reply_markup'=>$keyboard
-  ]);
-  }
-//======= متغیرها =======\\
-if(!is_dir("data/$from_id")){
-mkdir("data/$from_id");
+function fwd($to,$from,$msg_id){
+    $return = bot('forwardMessage',[
+		'chat_id'=>$to,
+        'from_chat_id'=>$from,
+        'message_id'=>$msg_id
+	]);
+	return $return;
 }
 $update = json_decode(file_get_contents('php://input'));
-$chat_id = $update->message->chat->id;
-$from_id = $update->message->from->id;
-$text = $update->message->text;
-$step = file_get_contents("data/$from_id/step.txt");
-$ADMIN = "710732845";
-//============
-$sudo = json_encode(['keyboard'=>[
-[['text'=>"امار"]],
-[['text'=>"ارسال همگانی"],['text'=>"فروارد همگانی"]],
-[['text'=>"برگشت"]],
-],'resize_keyboard'=>true]);
-//============
-if($text == "/start"){
-if (!file_exists("data/$from_id/step.txt")) {
-        mkdir("data/$from_id");
-        file_put_contents("data/$from_id/step.txt","none");
-        $myfile2 = fopen("Member.txt", "a") or die("Unable to open file!");
-        fwrite($myfile2, "$from_id\n");
-        fclose($myfile2);
+$message = $update->message;
+$chat_id = $message->chat->id;
+$from_id= $message->from->id;
+$text = $message->text;
+$message_id = $message->message_id;
+$reply = $message->reply_to_message;
+$inline_data = $update->callback_query->data;
+if($from_id != $admin){
+    if($text == "/start"){
+        send($chat_id,"💐به ربات پیام رسان من خوش امدید\n📥پیامتان را بفرسید\n📯ساخته شده توسط @MrCodi");
+    }elseif($update){
+        $r = fwd($admin,$from_id,$message_id);
+        if(isset($r['result']['forward_from_chat'])){
+            bot('sendMessage',[
+                'chat_id'=>$admin,
+                'text'=>"این پیام از یک کانال ارسال شده و یا ارسال کننده این پیام فروارد عمومی خود را بسته برای پاسخ به این پیام بر روی دکمه زیر کلیک کنید👇",
+                'parse_mode'=>'MarkDown',
+                'reply_to_message_id'=>$r['result']['message_id'],
+                'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    [
+                        ['text'=>"📪پاسخ",'callback_data'=>"answer:$from_id"]
+                    ]
+                ]])
+            ]);
+        }
+        send($chat_id,"📫پیام شما ارسال شد\nمنتظر جواب باشید\n📯ساخته شده توسط @MrCodi");
     }
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"سلام دوست عزیز
- به ربات اینستا دانلودر خوش اومدی :)
-🔻 از دکمه های زیر استفاده کن 🔻
-",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"دانلود عکس"],['text'=>"دانلود فیلم"]],
-],
-'resize_keyboard'=>true
-])
-]);
+}else{
+    if($text == "/start"){
+        send($chat_id,"💐سلام ادمین به ربات خودت خوش اومدی\nهر پیامی که کاربرا توی ربات بفرستن به تو فروارد میشه و میتونی با ریپلای کردن روشون بهشون جواب بدی✌️");
+    }elseif($text && $reply){
+        $to_send = $reply->forward_from->id;
+        send($to_send,"پیام شما پاسخ داده شد👇");
+        send($to_send,$text);
+        send($chat_id,"📪پاسخ شما فرستاده شد");
+    }elseif($update->message->sticker && $reply){
+        $to_send = $reply->forward_from->id;
+        send($to_send,"پیام شما پاسخ داده شد👇");
+        bot('sendSticker',[
+            'chat_id'=>$to_send,
+            'sticker'=>$update->message->sticker->file_id
+        ]);
+        send($chat_id,"📪پاسخ شما فرستاده شد");
+    }elseif($update->message->photo && $reply){
+        $to_send = $reply->forward_from->id;
+        send($to_send,"پیام شما پاسخ داده شد👇");
+        $photo = json_encode($update->message->photo);
+        $photo = json_decode($photo,true);
+        bot('sendPhoto',[
+            'chat_id'=>$to_send,
+            'photo'=>$photo[count($photo)-1]['file_id']
+        ]);
+        send($chat_id,"📪پاسخ شما فرستاده شد");
+    }elseif($reply){
+        $to_send = $reply->forward_from->id;
+        send($to_send,"پیام شما پاسخ داده شد👇");
+        fwd($to_send,$admin,$message_id);
+        send($chat_id,"📪پاسخ شما فرستاده شد");
+    }
+}//@iRoSource
+if(preg_match("/answer:(.*)/",$inline_data,$a)){
+    $f = fopen("temp.temp", "w") or die("Unable to open file!");
+    fwrite($f, $a[1]);
+    fclose($f);
+    send($admin,"📬پاسخ خود را بفرستيد");
+}elseif(file_exists("temp.temp") && $text){
+    send(file_get_contents("temp.temp"),"پیام شما پاسخ داده شد👇");
+    send(file_get_contents("temp.temp"),$text);
+    send($admin,"📪پاسخ شما فرستاده شد");
+    unlink("temp.temp");
+}elseif(file_exists("temp.temp") && $update->message->sticker){
+    send(file_get_contents("temp.temp"),"پیام شما پاسخ داده شد👇");
+    bot('sendSticker',[
+        'chat_id'=>file_get_contents("temp.temp"),
+        'sticker'=>$update->message->sticker->file_id
+    ]);
+    send($admin,"📪پاسخ شما فرستاده شد");
+    unlink("temp.temp");
+}elseif(file_exists("temp.temp") && $update->message->photo){
+    send(file_get_contents("temp.temp"),"پیام شما پاسخ داده شد👇");
+    $photo = json_encode($update->message->photo);
+    $photo = json_decode($photo,true);
+    bot('sendPhoto',[
+        'chat_id'=>file_get_contents("temp.temp"),
+        'photo'=>$photo[count($photo)-1]['file_id']
+    ]);
+    send($admin,"📪پاسخ شما فرستاده شد");
+    unlink("temp.temp");
+}elseif(file_exists("temp.temp") && $update){
+    send(file_get_contents("temp.temp"),"پیام شما پاسخ داده شد👇");
+    fwd(file_get_contents("temp.temp"),$admin,$message_id);
+    send($chat_id,"📪پاسخ شما فرستاده شد");
+    unlink("temp.temp");
 }
-elseif($text == "دانلود عکس"){
-file_put_contents("data/$from_id/step.txt","c1");
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"لطفا لینک عکس خود را ارسال کنید",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-elseif($step == "c1"){
-file_put_contents("data/$from_id/step.txt","none");
-bot('SendPhoto',[
-'chat_id'=>$chat_id,
-'photo'=>"$text",
-'caption'=>"Done !",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-elseif($text == "دانلود فیلم"){
-file_put_contents("data/$from_id/step.txt","c2");
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"لطفا لینک فیلم خود را ارسال کنید",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-elseif($step == "c2"){
-file_put_contents("data/$from_id/step.txt","none");
-bot('sendVideo',[
-'chat_id'=>$chat_id,
-'video'=>"$text",
-'caption'=>"Done !",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"به منوی قبلی برگشتید :",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"دانلود عکس"],['text'=>"دانلود فیلم"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-//panel admin
-elseif($text == "/panel" && $chat_id == $ADMIN){
-SendMessage($chat_id,"ادمین عزیز به پنل مدیریت خوش آمدید","MarkDown","true",$sudo);
-} 
-
-elseif($text == "امار" && $from_id == $ADMIN){
-    $user = file_get_contents("Member.txt");
-    $member_id = explode("\n",$user);
-    $member_count = count($member_id) -1;
-	sendmessage($chat_id , " آمار کاربران : $member_count" , "html");
-}
-elseif($text == "ارسال همگانی" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","send");
-	bot('sendmessage',[
-    'chat_id'=>$chat_id,
-    'text'=>" پیام مورد نظر رو در قالب متن بفرستید:",
-    'parse_mode'=>'html',
-    'reply_markup'=>json_encode([
-      'keyboard'=>[
-	  [['text'=>'/panel']],
-      ],'resize_keyboard'=>true])
-  ]);
-}
-elseif($step == "send" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","no");
-	bot('sendmessage',[
-    'chat_id'=>$chat_id,
-    'text'=>" پیام همگانی فرستاده شد.",
-  ]);
-	$all_member = fopen( "Member.txt", "r");
-		while( !feof( $all_member)) {
- 			$user = fgets( $all_member);
-			SendMessage($user,$text,"html");
-		}
-}
-elseif($text == "فروارد همگانی" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","fwd");
-	bot('sendmessage',[
-    'chat_id'=>$chat_id,
-    'text'=>"پیام خودتون را فروراد کنید:",
-    'parse_mode'=>'html',
-    'reply_markup'=>json_encode([
-      'keyboard'=>[
-	  [['text'=>'/panel']],
-      ],'resize_keyboard'=>true])
-  ]);
-}
-elseif($step == "fwd" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","no");
-	bot('sendmessage',[
-    'chat_id'=>$chat_id,
-    'text'=>"درحال فروارد",
-  ]);
-$forp = fopen( "Member.txt", 'r'); 
-while( !feof( $forp)) { 
-$fakar = fgets( $forp); 
-Forward($fakar, $chat_id,$message_id); 
-  } 
-   bot('sendMessage',[ 
-   'chat_id'=>$chat_id, 
-   'text'=>"با موفقیت فروارد شد.", 
-   ]);
-}
+//@iRoSource 
 ?>

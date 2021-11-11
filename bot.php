@@ -1,7 +1,7 @@
 <?php
 # -- Developer : Pouria Hosseini | Channel : @iRoSource | Pv : @NullDeveloper -- #
 ob_start();
-define('API_KEY','Token'); # -- Token -- #
+define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA'); # -- Token -- #
 function bot($method,$datas=[]){
     $url = "https://api.telegram.org/bot".API_KEY."/".$method;
     $ch = curl_init();

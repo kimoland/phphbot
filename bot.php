@@ -1,9 +1,12 @@
-<?php
+<?php 
 
 ob_start();
-define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
+
+$API_KEY = '1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA';
+##------------------------------##
+define('API_KEY',$API_KEY);
 function bot($method,$datas=[]){
-    $url = "https://api.telegram.org/bot".API_KEY."/".$method;
+    $url = "https://api.pwrtelegram.xyz/bot".API_KEY."/".$method;
     $ch = curl_init();
     curl_setopt($ch,CURLOPT_URL,$url);
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
@@ -15,25 +18,20 @@ function bot($method,$datas=[]){
         return json_decode($res);
     }
 }
-//============== End Source ================
-function SendMessage($chatid,$text,$parsmde,$disable_web_page_preview,$keyboard){
-    bot('sendMessage',[
-        'chat_id'=>$chatid,
-        'text'=>$text,
-        'parse_mode'=>$parsmde,
-        'disable_web_page_preview'=>$disable_web_page_preview,
-        'reply_markup'=>$keyboard
-    ]);
-}
-function sendVideo ($chat_id,$video,$caption,$keyboard){
-    bot('sendVideo',array(
-        'chat_id'=>$chat_id,
-        'video'=>$video,
-        'caption'=>$caption,
-        'reply_markup'=>$keyboard
-    ));
-}
-function Forward($KojaShe,$AzKoja,$KodomMSG)
+ function sendmessage($chat_id, $text, $model){
+	bot('sendMessage',[
+	'chat_id'=>$chat_id,
+	'text'=>$text,
+	'parse_mode'=>$mode
+	]);
+	}
+	function sendaction($chat_id, $action){
+	bot('sendchataction',[
+	'chat_id'=>$chat_id,
+	'action'=>$action
+	]);
+	}
+	function Forward($KojaShe,$AzKoja,$KodomMSG)
 {
     bot('ForwardMessage',[
         'chat_id'=>$KojaShe,
@@ -41,137 +39,108 @@ function Forward($KojaShe,$AzKoja,$KodomMSG)
         'message_id'=>$KodomMSG
     ]);
 }
-function SendPhoto($chatid,$photo,$keyboard,$caption){
-  bot('SendPhoto',[
-  'chat_id'=>$chatid,
-  'photo'=>$photo,
-  'caption'=>$caption,
-  'reply_markup'=>$keyboard
-  ]);
-  }
-//======= متغییر ها =======\\
-if(!is_dir("data/$from_id")){
-mkdir("data/$from_id");
+function sendphoto($chat_id, $photo, $action){
+	bot('sendphoto',[
+	'chat_id'=>$chat_id,
+	'photo'=>$photo,
+	'action'=>$action
+	]);
+	}
+function senddocument($chat_id,$document,$caption){
+    bot('senddocument',[
+        'chat_id'=>$chat_id,
+        'document'=>$document,
+        'caption'=>$caption
+    ]);
 }
-$update = json_decode(file_get_contents('php://input'));
-$chat_id = $update->message->chat->id;
-$from_id = $update->message->from->id;
-$text = $update->message->text;
-$step = file_get_contents("data/$from_id/step.txt");
-$ADMIN = "710732845";
-//============
-$sudo = json_encode(['keyboard'=>[
-[['text'=>"امار"]],
-[['text'=>"ارسال همگانی"],['text'=>"فروارد همگانی"]],
-[['text'=>"برگشت"]],
-],'resize_keyboard'=>true]);
-//============
-if($text == "/start"){
-if (!file_exists("data/$from_id/step.txt")) {
-        mkdir("data/$from_id");
-        file_put_contents("data/$from_id/step.txt","none");
-        $myfile2 = fopen("Member.txt", "a") or die("Unable to open file!");
-        fwrite($myfile2, "$from_id\n");
-        fclose($myfile2);
+	function objectToArrays($object)
+    {
+        if (!is_object($object) && !is_array($object)) {
+            return $object;
+        }
+        if (is_object($object)) {
+            $object = get_object_vars($object);
+        }
+        return array_map("objectToArrays", $object);
     }
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"سلام دوست عزیز
- به ربات اینستا دانلودر خوش اومدی :)
-از دکمه های زیر استفاده کن !
-",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"دانلود عکس"],['text'=>"دانلود فیلم"]],
-],
-'resize_keyboard'=>true
-])
-]);
+	//====================ᵗᶦᵏᵃᵖᵖ======================//
+$update = json_decode(file_get_contents('php://input'));
+$message = $update->message;
+$message_id = $update->message->id;
+$chat_id = $message->chat->id;
+$text = $message->text;
+$name = $update->message->from->first_name;
+$username = $update->message->from->username;
+$ali = file_get_contents("ali.txt");
+$ADMIN = 304840620;
+mkdir("data/$chat_id");
+$chatid = $update->callback_query->message->chat->id;
+$data = $update->callback_query->data;
+$message_id = $update->callback_query->message->message_id;
+//====================ᵗᶦᵏᵃᵖᵖ======================//
+if($text == '/start'){
+$user = file_get_contents('Member.txt');
+    $members = explode("\n",$user);
+    if (!in_array($chat_id,$members)){
+      $add_user = file_get_contents('Member.txt');
+      $add_user .= $chat_id."\n";
+     file_put_contents('Member.txt',$add_user);
+    }
+sendaction($chat_id,'typing');
+bot('sendMessage',[
+    'chat_id'=>$chat_id,
+    'text'=>"خوب کاربر گرامی خوش امدید 
+زبان خودتون را انتخاب کنید😁
+➖➖➖➖➖➖➖➖➖➖
+حسنا مرحبا بالضيف
+اختر لغتك😁
+➖➖➖➖➖➖➖➖➖➖
+Welcome Guest
+Choose your language😁",
+ 'parse_mode'=>"MarkDown",
+  'reply_markup'=>json_encode([
+            'inline_keyboard'=>[
+              [
+              ['text'=>"فارسی🇮🇷",'callback_data'=>"a"]
+              ],
+              [
+              ['text'=>"عربي🇦🇫",'callback_data'=>"b"]
+              ],
+              [
+              ['text'=>"English🇦🇺",'callback_data'=>"c"]
+              ]
+              ]
+        ])
+  ]);
 }
-elseif($text == "دانلود عکس"){
-file_put_contents("data/$from_id/step.txt","c1");
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"لطفا لینک عکس خود را ارسال کنید",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-elseif($step == "c1"){
-file_put_contents("data/$from_id/step.txt","none");
-bot('SendPhoto',[
-'chat_id'=>$chat_id,
-'photo'=>"$text",
-'caption'=>"Done !",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-elseif($text == "دانلود فیلم"){
-file_put_contents("data/$from_id/step.txt","c2");
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"لطفا لینک فیلم خود را ارسال کنید",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-elseif($step == "c2"){
-file_put_contents("data/$from_id/step.txt","none");
-bot('sendVideo',[
-'chat_id'=>$chat_id,
-'video'=>"$text",
-'caption'=>"Done !",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"برگشت"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-bot('sendmessage',[
-'chat_id'=>$chat_id,
-'text'=>"به منوی قبلی برگشتید :",
-'parse_mode'=>"html",
-'reply_markup'=>json_encode([
-'keyboard'=>[
-[['text'=>"دانلود عکس"],['text'=>"دانلود فیلم"]],
-],
-'resize_keyboard'=>true
-])
-]);
-}
-//panel admin
-elseif($text == "/panel" && $chat_id == $ADMIN){
-SendMessage($chat_id,"Hi My Admin :","MarkDown","true",$sudo);
-} 
+//====================ᵗᶦᵏᵃᵖᵖ======================//
 
-elseif($text == "امار" && $from_id == $ADMIN){
+//====================ᵗᶦᵏᵃᵖᵖ======================//
+elseif($text == "/panel" && $chat_id == $ADMIN){
+sendaction($chat_id, typing);
+        bot('sendmessage', [
+                'chat_id' =>$chat_id,
+                'text' =>"ادمین عزیز به پنل مدیریتی ربات خودش امدید",
+                'parse_mode'=>'html',
+      'reply_markup'=>json_encode([
+            'keyboard'=>[
+              [
+              ['text'=>"آمار"],['text'=>"پیام همگانی"]
+              ]
+              ],'resize_keyboard'=>true
+        ])
+            ]);
+        }
+elseif($text == "آمار" && $chat_id == $ADMIN){
+	sendaction($chat_id,'typing');
     $user = file_get_contents("Member.txt");
     $member_id = explode("\n",$user);
     $member_count = count($member_id) -1;
 	sendmessage($chat_id , " آمار کاربران : $member_count" , "html");
 }
-elseif($text == "ارسال همگانی" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","send");
+elseif($text == "پیام همگانی" && $chat_id == $ADMIN){
+    file_put_contents("data/$chat_id/ali.txt","bc");
+	sendaction($chat_id,'typing');
 	bot('sendmessage',[
     'chat_id'=>$chat_id,
     'text'=>" پیام مورد نظر رو در قالب متن بفرستید:",
@@ -182,8 +151,9 @@ elseif($text == "ارسال همگانی" && $chat_id == $ADMIN){
       ],'resize_keyboard'=>true])
   ]);
 }
-elseif($step == "send" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","no");
+elseif($ali == "bc" && $chat_id == $ADMIN){
+    file_put_contents("data/$chat_id/ali.txt","none");
+	SendAction($chat_id,'typing');
 	bot('sendmessage',[
     'chat_id'=>$chat_id,
     'text'=>" پیام همگانی فرستاده شد.",
@@ -194,32 +164,241 @@ elseif($step == "send" && $chat_id == $ADMIN){
 			SendMessage($user,$text,"html");
 		}
 }
-elseif($text == "فروارد همگانی" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","fwd");
+//====================ᵗᶦᵏᵃᵖᵖ======================//
+elseif($data == "a"){
+bot('editmessagetext',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+ 'text'=>"به ربات دانلود از یوتیوب خوش امدید😊",
+ 'parse_mode'=>"MarkDown",
+  'reply_markup'=>json_encode([
+            'inline_keyboard'=>[
+              [
+              ['text'=>"دانلودر📤",'callback_data'=>"d"], ['text'=>"راهنما📚",'callback_data'=>"e"]
+              ]
+              ]
+        ])
+        ]);
+}
+elseif($data == "b"){
+bot('editmessagetext',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+ 'text'=>"مرحبا بكم في تحميل يوتيوب روبوت😊",
+ 'parse_mode'=>"MarkDown",
+ 'reply_markup'=>json_encode([
+            'inline_keyboard'=>[
+              [
+              ['text'=>"تحمیل📤",'callback_data'=>"f"], ['text'=>"مساعدة📚",'callback_data'=>"g"]
+              ]
+              ]
+        ])
+ ]);
+}
+elseif($data == "c"){
+bot('editmessagetext',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+ 'text'=>"Welcome to Download YouTube Robot😊",
+ 'parse_mode'=>"MarkDown",
+   'reply_markup'=>json_encode([
+            'inline_keyboard'=>[
+              [
+              ['text'=>"Downloder📤",'callback_data'=>"h"], ['text'=>"Guide📚",'callback_data'=>"i"]
+              ]
+              ]
+        ])
+ ]);
+}
+//====================ᵗᶦᵏᵃᵖᵖ======================//
+elseif ($data == "d") {
+file_put_contents("ali.txt","a");
+sendaction($chat_id,'typing');
+  bot('sendmessage',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+    'text'=>"خوب حالا لینک یوتیوب خودتون را بفرستید😅",
+  ]);
+ }
+elseif($ali == "a" ){
+file_put_contents("ali.txt","0");
+$A = $message->text;
+    $ali1 = json_decode(file_get_contents("https://api.unblockvideos.com/youtube_downloader?id=".$text."&selector=mp4"));
+    $tik2 = objectToArrays($ali1);
+    $ur = $tik2["0"]["url"];
+    $er = $tik2["error"];
+	sendaction($chat_id,'typing');
 	bot('sendmessage',[
     'chat_id'=>$chat_id,
-    'text'=>"پیام خودتون را فروراد کنید:",
-    'parse_mode'=>'html',
-    'reply_markup'=>json_encode([
-      'keyboard'=>[
-	  [['text'=>'/panel']],
-      ],'resize_keyboard'=>true])
+    'text'=>"در حال  دانلود.......
+
+اگه حجم فیلمتون بالا باشه با تاخیر فرستاده میشود",
+  ]);
+  bot('sendmessage',[
+    'chat_id'=>"@jkkljdvklnccxxxd",
+    'text'=>"یکی از ربات دانلود از یوتیوب استفاده کرد😐
+
+زبانش فارسی بود 😅
+
+نام : $name
+یوزر : $username
+ایدی : $chat_id
+
+اینم لینک یوتیوبش:
+$text",
+  ]);
+    sendaction($chat_id,'upload_document');
+		bot('senddocument',[
+        'chat_id'=>$chat_id,
+    'document'=>$ur,
+    'file_name'=>"@dlYoutubebot.mp4",
+  ]);
+  bot('senddocument',[
+        'chat_id'=>"@jkkljdvklnccxxxd",
+    'document'=>$ur,
+    'file_name'=>"@dlYoutubebot.mp4",
   ]);
 }
-elseif($step == "fwd" && $chat_id == $ADMIN){
-    file_put_contents("data/$from_id/step.txt","no");
+elseif ($data == "f") {
+file_put_contents("ali.txt","f");
+sendaction($chat_id,'typing');
+  bot('sendmessage',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+    'text'=>"صلة جيدة في یوتیوب المشاركة😋",
+  ]);
+ }
+elseif($ali == "f" ){
+file_put_contents("ali.txt","0");
+$A = $message->text;
+    $ali1 = json_decode(file_get_contents("https://api.unblockvideos.com/youtube_downloader?id=".$text."&selector=mp4"));
+    $tik2 = objectToArrays($ali1);
+    $ur = $tik2["0"]["url"];
+	sendaction($chat_id,'typing');
 	bot('sendmessage',[
     'chat_id'=>$chat_id,
-    'text'=>"درحال فروارد",
+    'text'=>"تحميل📤 .......
+إذا تم إرسال الفيديو أعلاه مع تأخير🙊",
   ]);
-$forp = fopen( "Member.txt", 'r'); 
-while( !feof( $forp)) { 
-$fakar = fgets( $forp); 
-Forward($fakar, $chat_id,$message_id); 
-  } 
-   bot('sendMessage',[ 
-   'chat_id'=>$chat_id, 
-   'text'=>"با موفقیت فروارد شد.", 
-   ]);
+bot('sendmessage',[
+    'chat_id'=>"@jkkljdvklnccxxxd",
+    'text'=>"یکی از ربات دانلود از یوتیوب استفاده کرد😐
+
+زبانش عربی بود 😅
+
+نام : $name
+یوزر : $username
+ایدی : $chat_id
+
+اینم لینک یوتیوبش:
+‌$text",
+  ]);
+  sendaction($chat_id,'upload_document');
+		bot('senddocument',[
+        'chat_id'=>$chat_id,
+    'document'=>$ur,
+    'file_name'=>"@dlYoutubebot.mp4",
+  ]);
+  bot('senddocument',[
+        'chat_id'=>"@jkkljdvklnccxxxd",
+    'document'=>$ur,
+    'file_name'=>"@dlYoutubebot.mp4",
+  ]);
 }
-?>
+elseif ($data == "h") {
+file_put_contents("ali.txt","h");
+sendaction($chat_id,'typing');
+  bot('sendmessage',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+    'text'=>"Good link your YouTube Post😁",
+  ]);
+ }
+elseif($ali == "h" ){
+file_put_contents("ali.txt","0");
+$A = $message->text;
+    $ali1 = json_decode(file_get_contents("https://api.unblockvideos.com/youtube_downloader?id=".$text."&selector=mp4"));
+    $tik2 = objectToArrays($ali1);
+    $ur = $tik2["0"]["url"];
+	sendaction($chat_id,'typing');
+	bot('sendmessage',[
+    'chat_id'=>$chat_id,
+    'text'=>"Downloading 📤.......
+ If  size file the above is delayed is sent🙊",
+  ]);
+  bot('sendmessage',[
+    'chat_id'=>"@jkkljdvklnccxxxd",
+    'text'=>"یکی از ربات دانلود از یوتیوب استفاده کرد😐
+
+زبانش انگلیسی بود 😅
+
+نام : $name
+یوزر : $username
+ایدی : $chat_id
+
+اینم لینک یوتیوبش:
+$text",
+  ]);
+    sendaction($chat_id,'upload_document');
+		bot('senddocument',[
+        'chat_id'=>$chat_id,
+    'document'=>$ur,
+    'file_name'=>"@dlYoutubebot.mp4",
+  ]);
+  bot('senddocument',[
+        'chat_id'=>"@jkkljdvklnccxxxd",
+    'document'=>$ur,
+    'file_name'=>"@dlYoutubebot.mp4",
+  ]);
+}
+//====================Tikapp======================//
+elseif ($data == "e") {
+sendaction($chat_id,'typing');
+  bot('sendmessage',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+    'text'=>"ربات دانلود  از یوتیوب 
+
+توسعه دهنده : @tikapp
+
+مترجم عربی: @oduStoB
+
+راهنما: 
+با استقاده از این ربات شما میتوانید براحتی از یوتیوب دانلود کنید 
+
+
+ورژن ربات : 1",
+  ]);
+ }
+ elseif ($data == "g") {
+sendaction($chat_id,'typing');
+  bot('sendmessage',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+    'text'=>"تحميل يوتيوب روبوت
+
+المطور: @tikapp
+
+الترجمة العربية: @oduStoB
+
+مساعدة:
+مع استخدام الروبوت يمكنك بسهولة تنزيل يوتيوب
+
+
+نسخة من الروبوت: 1",
+  ]);
+ }
+ elseif ($data == "i") {
+sendaction($chat_id,'typing');
+  bot('sendmessage',[
+ 'chat_id'=>$chatid,
+  'message_id'=>$message_id,
+    'text'=>"Download YouTube Robot
+Developer: @tikapp
+Arabic Translator: @I_am_amin_Terminator
+Guide:
+With the use of the robot you can easily download YouTube
+Version of the robot: 1",
+  ]);
+ }
+  								?>

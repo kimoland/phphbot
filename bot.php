@@ -91,5 +91,33 @@ bot('sendmessage',[
 ])
 ]);
 }
-
+elseif($text == "دانلود عکس"){
+file_put_contents("data/$from_id/step.txt","c1");
+bot('sendmessage',[
+'chat_id'=>$chat_id,
+'text'=>"لطفا لینک عکس خود را ارسال کنید",
+'parse_mode'=>"html",
+'reply_markup'=>json_encode([
+'keyboard'=>[
+[['text'=>"برگشت"]],
+],
+'resize_keyboard'=>true
+])
+]);
+}
+elseif($step == "c1"){
+file_put_contents("data/$from_id/step.txt","none");
+bot('SendPhoto',[
+'chat_id'=>$chat_id,
+'photo'=>"$text",
+'caption'=>"Done !",
+'parse_mode'=>"html",
+'reply_markup'=>json_encode([
+'keyboard'=>[
+[['text'=>"برگشت"]],
+],
+'resize_keyboard'=>true
+])
+]);
+}
 ?>

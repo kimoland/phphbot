@@ -1,74 +1,79 @@
-<?php
+<?php 
 
-/*
-شما میتوانید سورس کد خود را در این فایل قرار داده و محتویات این اسکریپت را حذف نمایید
-*/
+define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
 
-//دریافت تمامی ورودی ها
-$var = file_get_contents("php://input");
-//تبدیل ورودی ها به آرایه
-$var = json_decode($var,true);
-//دریافت شناسه چت
-$chat_id = $var['message']['chat']['id'];
-//دریافت پیام ارسال شده توسط کاربر
-$text = $var['message']['text'];
-//تعریف توکن ربات
-$token = "1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA"; // توکن را وارد نمایید
+function Bot($method,$datas=[]){
+    $url = "https://api.telegram.org/bot".API_KEY."/".$method;
+    $ch = curl_init();
+    curl_setopt($ch,CURLOPT_URL,$url);
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+    curl_setopt($ch,CURLOPT_POSTFIELDS,$datas);
+    $res = curl_exec($ch);
+    if(curl_error($ch)){
+        var_dump(curl_error($ch));
+    }else{
+       return json_decode($res);
+    }
+}
+function formatBytes($bytes, $precision = 2) { 
+    $units = array('B', 'KB', 'MB', 'GB', 'TB'); 
 
+    $bytes = max($bytes, 0); 
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024)); 
+    $pow = min($pow, count($units) - 1); 
 
-//این تابع یک پیام ساده ارسال میکند
-function sendMessage($chat_id,$text)
-{
-	global $token;
-    $api    = "https://api.telegram.org/bot$token/";
-    $method = "sendMessage";
-    $params = "?chat_id=$chat_id&text=" . urlencode($text);
-  
-  	$url = $api . $method . $params;
-    $result = file_get_contents($url);
-  	return $result;
+    // Uncomment one of the following alternatives
+     $bytes /= pow(1024, $pow);
+     //$bytes /= (1 << (10 * $pow)); 
+
+    return round($bytes, $precision) . ' ' . $units[$pow]; 
+} 
+$update = json_decode(file_get_contents('php://input'));
+if(isset($update->message)){
+    $message = $update->message; 
+    $chat_id = $message->chat->id;
+    $message_id = $message->message_id;
+    $textmessage = $message->text;
 }
-//این تابع یک پیام به همراه کیبورد ساده ارسال میکند
-function sendMessageWithKeyboard($chat_id,$text,$reply_markup)
-{
-	global $token;
-    $api    = "https://api.telegram.org/bot$token/";
-    $method = "sendMessage";
-    $params = "?chat_id=$chat_id&text=" . urlencode($text);
-    $params .= "&reply_markup=" . json_encode($reply_markup);
-  
-  	$url = $api . $method . $params;
-    $result = file_get_contents($url);
-  	return $result;
+if($textmessage == '/start'){
+	    bot('sendMessage',[
+         'chat_id'=>$chat_id,
+          'text'=>"به ربات نیم بها خوش امدید!
+          
+جهت نیم بها کردن لینک فایل موردنظر خود را ارسال کنید:",
+	 ]);
+}elseif(filter_var($textmessage, FILTER_VALIDATE_URL, FILTER_NULL_ON_FAILURE)){
+    
+    $data = json_decode(file_get_contents('https://rimon.ir/api/?url='.urlencode($textmessage)),true);
+    if(isset($data['file'])){
+        $file = $data['file'];
+        $length = formatBytes($data['length']);
+        $dl1 = $data['dl1'];
+        $dl2 = $data['dl2'];
+        bot('sendMessage',[
+         'chat_id'=>$chat_id,
+          'text'=>"نام فایل: $file
+حجم فایل: $length",
+          'reply_markup'=> json_encode([
+             'inline_keyboard'=>[
+[['text'=>'دانلود با سرور اول','url'=>"$dl1"]],
+[['text'=>'دانلود با سرور دوم','url'=>"$dl2"]]
+]])
+	 ]);
+    }else{
+        bot('sendMessage',[
+         'chat_id'=>$chat_id,
+          'text'=>"لینک نامعتبر!",
+	 ]);
+    }
+    
+}else{
+     bot('sendMessage',[
+         'chat_id'=>$chat_id,
+          'text'=>"لینک نامعتبر!",
+	 ]);
 }
-//تعریف  دکمه های کیبورد
-$keyboard_button = array( ['Button 1','Button 2'] );
-//تعریف کیبورد
-$keyboard = array(
-	'keyboard'			=>	$keyboard_button,
-	'resize_keyboard'	=>	true,
-);
-/*
-اگر پیام دریافتی از کاربر برابر :
-/start
-باشد، این خروجی داده خواهد شد
-*/
-if ( $text == '/start' ) 
-{
-	$message = "Hi There, Welcome...";
-	echo sendMessageWithKeyboard($chat_id,$message,$keyboard);
-}
-//اگر دکمه شماره 1 فشرده شود
-if ( $text == 'Button 1' ) 
-{
-	$message = "Result From Button 1";
-	echo sendMessage($chat_id,$message);
-}
-//اگر دکمه شماره 2 فشرده شود
-if ( $text == 'Button 2' ) 
-{
-	$message = "Result From Button 2";
-	sendMessage($chat_id,$message);
-}
+
+    
 
 ?>

@@ -1,1507 +1,1801 @@
 <?php
-ob_start();
-define('API_KEY',"1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA");
+	define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
+	//----######------
+	
+	function makereq($method,$datas=[]){
+	$url = "https://api.telegram.org/bot".API_KEY."/".$method;
+	$ch = curl_init();
+	curl_setopt($ch,CURLOPT_URL,$url);
+	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+	curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($datas));
+	$res = curl_exec($ch);
+	if(curl_error($ch)){
+	var_dump(curl_error($ch));
+	}else{
+	return json_decode($res);
+	}
+	}
+	//---------
+	$update = json_decode(file_get_contents('php://input'));
+	var_dump($update);
+	//=========
+	$chat_id = $update->message->chat->id;
+	$message_id = $update->message->message_id;
+	$from_id = $update->message->from->id;
+	$name = $update->message->from->first_name;
+	$contact = $update->message->contact;
+	$cnumber = $update->message->contact->phone_number;
+	$cname = $update->message->contact->first_name;
+	
+	$photo = $update->message->photo;
+	$video = $update->message->video;
+	$sticker = $update->message->sticker;
+	$file = $update->message->document;
+	$music = $update->message->audio;
+	$voice = $update->message->voice;
+	$forward = $update->message->forward_from;
+	
+	$username = $update->message->from->username;
+	$textmessage = isset($update->message->text)?$update->message->text:'';
+	$reply = $update->message->reply_to_message->forward_from->id;
+	$stickerid = $update->message->reply_to_message->sticker->file_id;
+	//------------
+	$_sticker = file_get_contents("data/setting/sticker.txt");
+	$_video = file_get_contents("data/setting/video.txt");
+	$_voice = file_get_contents("data/setting/voice.txt");
+	$_file = file_get_contents("data/setting/file.txt");
+	$_photo = file_get_contents("data/setting/photo.txt");
+	$_music = file_get_contents("data/setting/music.txt");
+	$_forward = file_get_contents("data/setting/forward.txt");
+	$_joingp = file_get_contents("data/setting/joingp.txt");
+	//------------
+	$admin = "710732845";
+	$bottype = free;
+	$tb = No;
+	$step = file_get_contents("data/".$from_id."/step.txt");
+	$type = file_get_contents("data/".$from_id."/type.txt");
+	$list = file_get_contents("data/blocklist.txt");
+	//---Buttons----
+	$btn1_name = file_get_contents("data/btn/btn1_name");
+	$btn2_name = file_get_contents("data/btn/btn2_name");
+	$btn3_name = file_get_contents("data/btn/btn3_name");
+	$btn4_name = file_get_contents("data/btn/btn4_name");
+	
+	$btn1_post =  file_get_contents("data/btn/btn1_post");
+	$btn2_post =  file_get_contents("data/btn/btn2_post");
+	$btn3_post =  file_get_contents("data/btn/btn3_post");
+	$btn4_post =  file_get_contents("data/btn/btn4_post");
+	
+	//-----------
+	function SendMessage($ChatId, $TextMsg)
+	{
+	makereq('sendMessage',[
+	'chat_id'=>$ChatId,
+	'text'=>$TextMsg,
+	'parse_mode'=>"MarkDown"
+	]);
+	}
+	function SendSticker($ChatId, $sticker_ID)
+	{
+	makereq('sendSticker',[
+	'chat_id'=>$ChatId,
+	'sticker'=>$sticker_ID
+	]);
+	}
+	function Forward($KojaShe,$AzKoja,$KodomMSG)
+	{
+	makereq('ForwardMessage',[
+	'chat_id'=>$KojaShe,
+	'from_chat_id'=>$AzKoja,
+	'message_id'=>$KodomMSG
+	]);
+	
+	}
+	function save($filename,$TXTdata)
+	{
+	$myfile = fopen("data/".$filename, "w") or die("Unable to open file!");
+	fwrite($myfile, "$TXTdata");
+	fclose($myfile);
+	}
+	//===========
+	if (strpos($list , "$from_id") !== false  ) {
+		SendMessage($chat_id,"You Are Blocked!");
+	}
+	elseif(isset($update->callback_query)){
+    $callbackMessage = 'آپدیت شد';
+    var_dump(makereq('answerCallbackQuery',[
+        'callback_query_id'=>$update->callback_query->id,
+        'text'=>$callbackMessage
+    ]));
+    $chat_id = $update->callback_query->message->chat->id;
+    $message_id = $update->callback_query->message->message_id;
+    $data = $update->callback_query->data;
+    //SendMessage($chat_id,"$data");
+	
+    if ($data == "sticker" && $_sticker == "✅") {
+      save("setting/sticker.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>"⛔️",'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+    if ($data == "sticker" && $_sticker == "⛔️") {
+
+	 save("setting/sticker.txt","✅");
+	     var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>"✅",'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
  
-function bot($method,$datas=[]){
-    $url = "https://api.telegram.org/bot".API_KEY."/".$method;
-    $ch = curl_init();
-    curl_setopt($ch,CURLOPT_URL,$url);
-    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-    curl_setopt($ch,CURLOPT_POSTFIELDS,$datas);
-    $res = curl_exec($ch);
-    if(curl_error($ch)){
-        var_dump(curl_error($ch));
-    }else{
-        return json_decode($res);
-    }
+     if ($data == "video" && $_video == "✅") {
+      save("setting/video.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>"⛔️",'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+     if ($data == "video" && $_video == "⛔️") {
+   save("setting/video.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>"✅",'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+ 
+    if ($data == "voice" && $_voice == "✅") {
+      save("setting/voice.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>"⛔️",'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+    if ($data == "voice" && $_voice == "⛔️") {
+
+	   save("setting/voice.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>"✅",'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+    if ($data == "file" && $_file == "✅") {
+      save("setting/file.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>"⛔️",'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+    if ($data == "file" && $_file == "⛔️") {
+	  save("setting/file.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>"✅",'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+ 
+     if ($data == "photo" && $_photo == "✅") {
+      save("setting/photo.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>"⛔️",'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+     if ($data == "photo" && $_photo == "⛔️") {
+	 save("setting/photo.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>"✅",'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+ 
+      if ($data == "music" && $_music == "✅") {
+      save("setting/music.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>"⛔️",'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+      if ($data == "music" && $_music == "⛔️") {
+	       save("setting/music.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>"✅",'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+ 
+ 
+       if ($data == "forward" && $_forward == "✅") {
+      save("setting/forward.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>"⛔️",'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+       if ($data == "forward" && $_forward == "⛔️") {
+
+	 save("setting/forward.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>"✅",'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+ 
+      if ($data == "joingp" && $_joingp == "✅") {
+      save("setting/joingp.txt","⛔️");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>"⛔️",'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+      if ($data == "joingp" && $_joingp == "⛔️") {
+	 save("setting/joingp.txt","✅");
+    var_dump(
+        makereq('editMessageText',[
+            'chat_id'=>$chat_id,
+            'message_id'=>$message_id,
+            'text'=>"به تنظیمات روبات خوش آمدید.
+
+ 🚫 = قفل شده.
+ ✅ = آزاد",
+            'reply_markup'=>json_encode([
+                'inline_keyboard'=>[
+                    			[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>"✅",'callback_data'=>"joingp"]
+					]
+		
+                ]
+            ])
+        ])
+    );
+ }
+ //=========================
 }
-$up=json_decode(file_get_contents('php://input'));
-$sudo= 710732845;
-$caption=$up->message->caption;
-$fwd_id=$up->message->reply_to_message->forward_from->id;
-$first_name=$up->message->from->first_name;
-$setting=json_decode(file_get_contents("setting.json"),true);
-$json=json_decode(file_get_contents("dasturat.json"),true);
-$last_name=$up->message->from->last_name;
-$msg_id=$up->message->message_id;
-$username=$up->message->from->username;
-$chat_id=$up->message->chat->id;
-$from_id=$up->message->from->id;
-if(!file_exists("sudo.txt")){
-  file_put_contents("sudo.txt","empty");
-}
-$vaziyat=file_get_contents("sudo.txt");
-if(!file_exists("member.txt")){
-  file_put_contents("member.txt","$sudo");
-}
-if(!file_exists("bakhsh.txt")){
-  file_put_contents("bakhsh.txt","empty");
-}
-if(file_exists("dasturat.txt")){
-  unlink("dasturat.txt");
-}
-if(!file_exists("profile.txt")){
-  file_put_contents("profile.txt","پروفایل خالی است.");
-}
-if(!file_exists("setting.json")){
-  file_put_contents("setting.json",json_encode(["sticker"=>"no","video"=>"no","photo"=>"no","videoNote"=>"no","audio"=>"no","voice"=>"no","document"=>"no"]));
-}
-if(!file_exists("dasturat.json")){
-  file_put_contents("dasturat.json",json_encode(["empty"=>"yes"]));
-}
-if(!file_exists("start.txt")){
-  file_put_contents("start.txt","");
-}
-if(!file_exists("block.txt")){
-  file_put_contents("block.txt","block");
-}
-$text=$up->message->text;
-$member=array_unique(file("member.txt"));
-if(isset($up->message)){
-  if($from_id==$sudo){
-    if($text=="لغو" and $vaziyat!="empty"){
-       if($vaziyat=="pasokhzirdastur"){
-        $commonds=$json[file_get_contents("bakhsh.txt")]["commonds"];
+	
+	elseif($textmessage == '')
+	{
+	//Check Kardan (Media)
+	if ($contact  != null && $step== 'Set Contact' && $from_id == $admin) {
+	save("profile/number.txt",$cnumber);
+	save("profile/cname.txt",$cname);
+	SendMessage($chat_id,"شماره ذخیره .
+	*$cname *: `$cnumber`");
+	}
+	
+	if ($photo != null) {
+	if ($_photo == "⛔️") {
+	SendMessage($chat_id,"Locked!");
+	}
+	else {
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		Forward($reply,$chat_id,$message_id); 
+		
+		}
+	}
+	}
+	
+	if ($sticker != null ) {
+		if ($_sticker == "⛔️" && $from_id != $admin) {
+	SendMessage($chat_id,"Locked!");
+		}
+	else {
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		Forward($reply,$chat_id,$message_id); 
+		}
+	}
+	}
+	
+	if ($video != null) {
+		if ($from_id != $admin && $_video == "⛔️") {
+	SendMessage($chat_id,"Locked!");
+		}
+		else {
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		Forward($reply,$chat_id,$message_id); 
+		}
+	}
+	}
+	
+	if ($music != null ) {
+		if ($from_id != $admin && $_music == "⛔️") {
+	SendMessage($chat_id,"Locked!");
+	}
+	else {
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		Forward($reply,$chat_id,$message_id); 
+		}
+	}
+	}
+	
+	if ($voice != null) {
+		if ($from_id != $admin && $_voice == "⛔️") {
+	SendMessage($chat_id,"Locked!");
+	}
+	else {
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		Forward($reply,$chat_id,$message_id); 
+		}
+	}
+	}
+	
+	if ($file != null ){
+		if ($from_id != $admin && $_file == "⛔️") {
+	SendMessage($chat_id,"Locked!");
+		}
+		
+	}
+	else {
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		Forward($reply,$chat_id,$message_id); 
+		}
+	}
+	}
+	elseif ($from_id != $chat_id) {
+		
+	SendMessage($chat_id,"من اجازه ورود به گروه را ندارم!
+بای😐👋");
+makereq('leaveChat',[
+	'chat_id'=>$chat_id
+	]);
+	}
         
-        foreach($json as $key=>$value){
-          if(isset($json[$key]["commonds"])){
-            if(array_search(file_get_contents("dastur.txt"),$commonds)!=false){
-              unset($json[$key]["commonds"][array_search(file_get_contents("dastur.txt"),$commonds)+0]);
-            }
-          }
+	elseif($textmessage == '🏠 برگشت به صفحه اصلی') {
+	save($from_id."/step.txt","none");
+	if ($type == "admin") {
+	
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"🏠 به صفحه اصلی خوش آمدید :",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		}
+    		else {
+    		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"*Home : *",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"👤 پروفایل"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    	}
+	}
+	elseif ($step == 'set word') {
+		save($from_id."/step.txt","set answer");
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"در جواب کلمه چه ارسال شود؟
+مثال:
+`سلام،خوبی؟`",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keybord'=>true
+       		])
+    		]));
+			save("words/$textmessaage.txt","Tarif Nashode !");
+			save("last_word.txt",$textmessage);
+	}
+	elseif ($step == 'set answer') {
+		save($from_id."/step.txt","none");
+		
+		$last = file_get_contents("data/last_word.txt");
+			$myfile2 = fopen("data/wordlist.txt", "a") or die("Unable to open file!");	
+			fwrite($myfile2, "$last\n");
+			fclose($myfile2);
+			save("words/$last.txt","$textmessage");
+		
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"`سیو شد.`
+یک گزینه را انتخاب کنید :
+			",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				[
+                   ['text'=>'اضافه کردن کلمه'],['text'=>'حذف کلمه']
+                ],
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+		
+			
+	}
+	
+	elseif($step == "del words") {
+			unlink("data/words/$textmessage.txt");
+			var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"`حذف شد.`
+یک گزینه را انتخاب کنید :
+			",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				[
+                   ['text'=>'اضافه کردن کلمه'],['text'=>'حذف کلمه']
+                ],
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+			save($from_id."/step.txt","none");
+	}
+	
+		elseif ($step== 'Forward' && $type == 'admin') {
+			if ($forward != null) {
+			$forward_id = file_get_contents("data/forward_id.txt");
+			Forward($forward_id,$chat_id,$message_id);
+			save($from_id."/step.txt","none");
+			SendMessage($chat_id,"فروارد  شد !");
+			}
+			else {
+				SendMessage($chat_id,"یک پیام را فروارد کنید !");
+			}
+		}
+	elseif ($step== 'Set Age' && $type == 'admin') {
+	
+	save($from_id."/step.txt","none");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"◀️با موفقیت تغییر یافت.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                 [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		save("profile/age.txt","$textmessage");
+	}
+	
+	elseif ($step== 'Set Name' && $type == 'admin') {
+	save($from_id."/step.txt","none");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"◀️با موفقیت تغییر یافت.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                 [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		save("profile/name.txt","$textmessage");
+	}
+	
+	elseif ($step== 'Set Bio' && $type == 'admin') {
+	save($from_id."/step.txt","none");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"◀️با موفقیت تغییر یافت.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                 [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		save("profile/bio.txt","$textmessage");
+	}
+	elseif ($step== 'Send To All' && $type == 'admin') {
+		SendMessage($chat_id,"`در حال ارسال پیام . . .`");
+		save($from_id."/step.txt","none");
+		$fp = fopen( "data/users.txt", 'r');
+		while( !feof( $fp)) {
+ 			$users = fgets( $fp);
+			SendMessage($users,$textmessage);
+		}
+		SendMessage($chat_id,"✅پیام شما به همه ی کاربران ربات ارسال گردید.");
+		
+	}
+	elseif ($step== 'Edit Start Text' && $type == 'admin') {
+		save($from_id."/step.txt","none");
+		save("start_txt.txt",$textmessage);
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"◀️پیام استارت شما با موفقیت تغییر یافت.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                 [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($step== 'Edit Message Delivery' && $type == 'admin') {
+		save($from_id."/step.txt","none");
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"◀️پیام پیشفرض شما با موفقیت تغییر یافت.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                 [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+		save("pmsend_txt.txt",$textmessage);
+	}
+	
+	elseif (file_exists("data/words/$textmessage.txt")) {
+		SendMessage($chat_id,file_get_contents("data/words/$textmessage.txt"));
+		
+	}
+	
+	elseif ($textmessage == 'امکانات ویژه' && $from_id == $admin) {
+		if ($bottype == 'gold') {
+			var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"به بخش امکانات ویژه خوش امدید",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				[
+                   ['text'=>'🗣 تنظیمات پاسخ خودکار']
+                ],
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
         }
-        unset($json[file_get_contents("dastur.txt")]);
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-        file_put_contents("sudo.txt","empty");
-        file_put_contents("bakhsh.txt","empty");
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"عملیات لغو شد."
-        ]);
-     }else{
-      file_put_contents("sudo.txt","empty");
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_عملیات لغو شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      }
-    }elseif($vaziyat=="resetbot"){
-      if($text=="بله"){
-        unlink("start.txt");
-        unlink("profile.txt");
-        unlink("dasturat.json");
-        unlink("setting.json");
-        unlink("dastur.txt");
-        unlink("bakhsh.txt");
-        unlink("block.txt");
-        file_put_contents("sudo.txt","empty");
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"ربات با موفقیت ریست شد.",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }else{
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"لطفا یکی از گزینه های زیر را انتخاب کنید."
-        ]);
-      }
-    }elseif($vaziyat=="hazfdastur"){
-     
- $json=json_decode(file_get_contents("dasturat.json"),true);    
- if(isset($json[$text]) && $text!="empty"){
-        unset($json[$text]);
-        foreach($json as $key=>$value){
-        if(isset($json[$key]["commonds"])){
-   $commonds=$json[$key]["commonds"];
-   unset($json[$key]["commonds"][array_search($text,$commonds)+0]);
- }}
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-        file_put_contents("sudo.txt","empty");
-        bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_دستور مورد نظر حذف شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      }else{
-        bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_این دستور موجود نیست._",
-        "parse_mode"=>"markdown"
-      ]);
-      }
-    }elseif($vaziyat=="forward"){
-      foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("forwardMessage",[
-          "chat_id"=>$id,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-    }elseif($vaziyat=="forward2"){
-      if(isset($up->message->text)){
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendMessage",[
-          "chat_id"=>$id,
-          "text"=>$text
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->photo)){
-        $up2=json_decode(file_get_contents("php://input"),true);
-        $file_id=$up2["message"]["photo"][0]["file_id"];
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendphoto",[
-          "chat_id"=>$id,
-          "photo"=>$file_id,
-          "caption"=>$caption
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->audio)){
-        $file_id=$up->message->audio->file_id;
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendaudio",[
-          "chat_id"=>$id,
-          "caption"=>$caption,
-          "audio"=>$file_id
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->document)){
-        $file_id=$up->message->document->file_id;
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("senddocument",[
-          "chat_id"=>$id,
-          "document"=>$file_id,
-          "caption"=>$caption
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->video_note)){
-        $file_id=$up->message->video_note->file_id;
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendvideonote",[
-          "chat_id"=>$id,
-          "video_note"=>$file_id
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->video)){
-        $file_id=$up->message->video->file_id;
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendvideo",[
-          "chat_id"=>$id,
-          "video"=>$file_id,
-          "caption"=>$caption
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->sticker)){
-        $file_id=$up->message->sticker->file_id;
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendsticker",[
-          "chat_id"=>$id,
-          "sticker"=>$file_id
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]); file_put_contents("sudo.txt","empty");
-      }elseif(isset($up->message->voice)){
-        $file_id=$up->message->voice->file_id;
-        foreach($member as $key=>$value){
-        $id=$value+0;
-        bot("sendvoice",[
-          "chat_id"=>$id,
-          "voice"=>$file_id,
-          "caption"=>$caption
-        ]);
-      }
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"_پیام شما با موفقیت به تمام کاربران ارسال شد._",
-        "parse_mode"=>"markdown",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-      file_put_contents("sudo.txt","empty");
-      }
-    }elseif($vaziyat=="deletemenu"){
-      if(isset($json[$text])){
-        unset($json[$text]);
-        foreach($json as $key=>$value){
-          if(isset($json[$key]["commonds"])){
-            $commonds=$json[$key]["commonds"];
-            if(array_search($text,$commonds)!=false){
-              unset($json[$key]["commonds"][array_search($text,$commonds)+0]);
-              $json[$key]["commonds"]=array_values($json[$key]["commonds"]);
-            }
-          }
-        }
-       $json=json_encode($json);
-       file_put_contents("dasturat.json","$json"); file_put_contents("sudo.txt","empty");
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"منو یا زیر منو مورد نظر حذف شد.",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }else{
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"این منو یا زیر منو موجود نیست."
-        ]);
-      }
-    }elseif($vaziyat=="createmenu"){
-      if(isset($up->message->text)){
-        if(isset($json[$text])){
-          bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"این دستور یا منو از قبل موجود است."
-        ]);
-        }else{
-          $json[$text]["type"]="menu";
-          $json[$text]["commonds"]=array("بازگشت به منوی اصلی");
-          $json=json_encode($json);
-          file_put_contents("sudo.txt","empty");
-          file_put_contents("dasturat.json","$json");
-          bot("sendMessage",[
-            "chat_id"=>$chat_id,
-            "text"=>"منو شما ایجاد شد و میتوانید در بخش مدیریت منو آن را مدیریت کنید.",
-            "reply_markup"=>json_encode(["remove_keyboard"=>true])
-          ]);
-        }
-      }else{
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"لطفا متن بفرستید."
-        ]);
-      }
-    }elseif($vaziyat=="profile"){
-      if(isset($up->message->text)){
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام پروفایل ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-        file_put_contents("sudo.txt","empty");
-        file_put_contents("profile.txt","$text");
-      }else{
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام فقط باید حاوی متن باشد._",
-          "parse_mode"=>"markdown"
-        ]);
-      }
-    }elseif($vaziyat=="dasturjadid"){
-      $json=json_decode(file_get_contents("dasturat.json"),true);
-      if(isset($up->message->text)){
-        if(!isset($json[$text]) && $text!="empty" && $text!="/start" && $text!="پروفایل"){
-          file_put_contents("dastur.txt","$text");
-          file_put_contents("sudo.txt","pasokh");
-          bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_حال پاسخ پیام خود را ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-        }else{
-          bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این دستور از قبل موجود است._",
-          "parse_mode"=>"markdown"
-        ]);
-        }
-      }else{
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور فقط باید متن باشد._",
-          "parse_mode"=>"markdown"
-        ]);
-      }
-    }elseif($vaziyat=="pasokh" or $vaziyat=="pasokhzirdastur"){
-      if(isset($up->message->text)){
-   $json=json_decode(file_get_contents("dasturat.json"),true);
-          $json[file_get_contents("dastur.txt")]["text"]="$text";
-          $json=json_encode($json);
-          file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->photo)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $up2=json_decode(file_get_contents("php://input"),true);
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up2["message"]["photo"][0]["file_id"];
-        $json[file_get_contents("dastur.txt")]["caption"]="$caption";
-        $json[file_get_contents("dastur.txt")]["type"]="photo";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
+		else {
+			SendMessage($chat_id,"ربات شما رایگان است .");
+		}
+	}
+	elseif ($textmessage == 'حذف کلمه' && $from_id == $admin) {
+				save($from_id."/step.txt","del words");
 
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->video)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $json[file_get_contents("dastur.txt")]["caption"]="$caption";
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up->message->video->file_id;
-        $json[file_get_contents("dastur.txt")]["type"]="video";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"کلمه مورد نظر را برای حذف کردن وارد کنید :",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	elseif ($textmessage == '🗣 تنظیمات پاسخ خودکار' && $bottype == 'gold' && $from_id == $admin) {
 
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->video_note)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up->message->video_note->file_id;
-        $json[file_get_contents("dastur.txt")]["type"]="video_note";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->sticker)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up->message->sticker->file_id;
-        $json[file_get_contents("dastur.txt")]["type"]="sticker";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->voice)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $json[file_get_contents("dastur.txt")]["caption"]="$caption";
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up->message->voice->file_id;
-        $json[file_get_contents("dastur.txt")]["type"]="voice";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->audio)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $json[file_get_contents("dastur.txt")]["caption"]="$caption";
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up->message->audio->file_id;
-        $json[file_get_contents("dastur.txt")]["type"]="audio";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }elseif(isset($up->message->document)){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $json[file_get_contents("dastur.txt")]["caption"]="$caption";
-        $json[file_get_contents("dastur.txt")]["file_id"]=$up->message->document->file_id;
-        $json[file_get_contents("dastur.txt")]["type"]="document";
-        $json=json_encode($json);
-        file_put_contents("dasturat.json","$json");
-         file_put_contents("sudo.txt","empty");
-            bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_دستور شما ذخیره شد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-      }
-    }elseif($vaziyat=="zirmenu"){
-      if(isset($up->message->text)){
-        if(isset($json[$text])){
-          bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"این دستور یا منو از قبل موجود است."
-        ]);
-        }else{
-          $json[$text]["type"]="menu";
-          $json[$text]["type2"]="zirmenu";
-          $json[$text]["commonds"]=array("بازگشت به منوی اصلی");
-          $commonds=$json[file_get_contents("bakhsh.txt")]["commonds"];
-          unset($commonds[array_search("بازگشت به منوی اصلی",$commonds)+0]);
-          $json[file_get_contents("bakhsh.txt")]["commonds"][count($commonds)]=$text;
-          $commonds=$json[file_get_contents("bakhsh.txt")]["commonds"];
-          $json[file_get_contents("bakhsh.txt")]["commonds"][count($commonds)]="بازگشت به منوی اصلی";
-          $json=json_encode($json);
-          file_put_contents("bakhsh.txt","empty");
-          file_put_contents("sudo.txt","empty");
-          file_put_contents("dasturat.json","$json");
-          bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"منو شما ایجاد شد.",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-        }
-      }else{
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"لطفا متن بفرستید."
-        ]);
-      }
-    }elseif($vaziyat=="zirdastur"){
-      if(isset($up->message->text)){
-        if(isset($json[$text])){
-          bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"این دستور یا منو از قبل موجود است."
-        ]);
-        }else{
-          $json[$text]["type2"]="zirdastur";
-          $commonds=$json[file_get_contents("bakhsh.txt")]["commonds"];
-          unset($commonds[array_search("بازگشت به منوی اصلی",$commonds)+0]);
-          $json[file_get_contents("bakhsh.txt")]["commonds"][count($commonds)]=$text;
-          $commonds=$json[file_get_contents("bakhsh.txt")]["commonds"];
-          $json[file_get_contents("bakhsh.txt")]["commonds"][count($commonds)]="بازگشت به منوی اصلی";
-          $json=json_encode($json);
-          file_put_contents("bakhsh.txt","empty");
-          file_put_contents("sudo.txt","pasokhzirdastur");
-          file_put_contents("dastur.txt",$text);
-          file_put_contents("dasturat.json","$json");
-          bot("sendMessage",[
-            "chat_id"=>$chat_id,
-            "text"=>"حالا پاسخ دستور خود را بفرستید."
-          ]);
-        }
-      }else{
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"لطفا متن بفرستید."
-        ]);
-      }
-    }elseif($vaziyat=="start"){
-      if(isset($up->message->text)){
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام دستور استارت تغییر کرد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])
-        ]);
-        file_put_contents("sudo.txt","empty");
-        file_put_contents("start.txt","$text");
-      }else{
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام فقط باید حاوی متن باشد._",
-          "parse_mode"=>"markdown"
-        ]);
-      }
-    }elseif($text=="/block" and isset($up->message->reply_to_message->forward_from->id) and $fwd_id!=$sudo){
-      $file=fopen("block.txt","a");
-      fwrite($file,"\n$fwd_id");
-      fclose($file);
-      bot("sendmessage",[
-          "chat_id"=>$fwd_id,
-          "text"=>"_کاربر شما از ربات بلاک شدید._",
-          "parse_mode"=>"markdown"
-        ]);
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_کاربر $fwd_id بلاک شد._",
-          "parse_mode"=>"markdown"
-        ]); 
-    }elseif(isset($up->message->reply_to_message) && !empty($fwd_id)){
-      if(isset($up->message->text)){
-        bot("sendMessage",[
-          "chat_id"=>$fwd_id,
-          "text"=>$text
-        ]);
-      }elseif(isset($up->message->photo)){
-        $up2=json_decode(file_get_contents("php://input"),true);
-        $file_id=$up2["message"]["photo"][0]["file_id"];
-        bot("sendphoto",[
-          "chat_id"=>$fwd_id,
-          "caption"=>$caption,
-          "photo"=>$file_id
-        ]);
-      }elseif(isset($up->message->video)){
-        $file_id=$up->message->video->file_id;
-        bot("sendvideo",[
-          "chat_id"=>$fwd_id,
-          "caption"=>$caption,
-          "video"=>$file_id
-        ]);
-      }elseif(isset($up->message->video_note)){
-        $file_id=$up->message->video_note->file_id;
-        bot("sendvideonote",[
-          "chat_id"=>$fwd_id,
-          "video_note"=>$file_id
-        ]);
-      }elseif(isset($up->message->sticker)){
-        $file_id=$up->message->sticker->file_id;
-        bot("sendsticker",[
-          "chat_id"=>$fwd_id,
-          "sticker"=>$file_id
-        ]);
-      }elseif(isset($up->message->voice)){
-        $file_id=$up->message->voice->file_id;
-        bot("sendVoice",[
-          "chat_id"=>$fwd_id,
-          "caption"=>$caption,
-          "voice"=>$file_id
-        ]);
-      }elseif(isset($up->message->audio)){
-        $file_id=$up->message->audio->file_id;
-        bot("sendAudio",[
-          "chat_id"=>$fwd_id,
-          "caption"=>$caption,
-          "audio"=>$file_id
-        ]);
-      }elseif(isset($up->message->document)){
-        $file_id=$up->message->document->file_id;
-        bot("sendDocument",[
-          "chat_id"=>$fwd_id,
-          "caption"=>$caption,
-          "document"=>$file_id
-        ]);
-      }
-        bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما باموفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-    }elseif($text=="ایجاد منو" && file_get_contents("bakhsh.txt")!="empty"){
-      file_put_contents("sudo.txt","zirmenu");
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"نام منو را ارسال کنید.",
-        "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])
-      ]);
-    }elseif($text=="ایجاد دستور" && file_get_contents("bakhsh.txt")!="empty"){
-      file_put_contents("sudo.txt","zirdastur");
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"دستور خود را ارسال کنید.",
-        "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])
-      ]);
-    }elseif(isset($json[$text]["commonds"])){
-      file_put_contents("bakhsh.txt",$text);
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"یکی از گزینه های زیر را انتخاب کنید.",
-        "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"ایجاد منو"],["text"=>"ایجاد دستور"]],[["text"=>"بازگشت به منوی اصلی"]]]])
-      ]);
-    }elseif($text=="بازگشت به منوی اصلی"){
-      bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_به بخش اصلی برگشتیم میتونی دوباره دستور /start رو ارسال کنی._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true])]);
-    }elseif($text=="/memberfile"){
-      bot("sendDocument",[
-        "chat_id"=>$chat_id,
-        "document"=>new CurlFile("member.txt")
-      ]);
-    }elseif($text=="/turn off"){
-      if(!is_file("lock")){
-        file_put_contents("lock","");
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"ربات برای کاربران خاموش گردید."
-        ]);
-      }else{
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"ربات از پیش برای کاربران خاموش است."
-        ]);
-      }
-    }elseif($text=="/turn on"){
-      if(is_file("lock")){
-        unlink("lock");
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"ربات برای کاربران دوباره روشن شد."
-        ]);
-      }else{
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"ربات از پیش برای کاربران روشن است."
-        ]);
-      }
-    }elseif($text=="/start"){
-    file_put_contents("bakhsh.txt","empty");
-      bot("sendmessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_چکاری میتونم انجام بدم ادمین؟_",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["remove_keyboard"=>true,"inline_keyboard"=>[[["text"=>"آمار 👥","callback_data"=>"amar"],["text"=>"پروفایل 👤","callback_data"=>"profile"]],[["text"=>"فروارد همگانی 🗣","callback_data"=>"forward"],["text"=>"بلاک لیست 🚫","callback_data"=>"block"]],[["text"=>"♨️ پیام استارت ربات ♨️","callback_data"=>"start"]],[["text"=>"✏️فروارد بدون عنوان✏️","callback_data"=>"forward2"]],[["text"=>"دستور ➕","callback_data"=>"dasturjadid"],["text"=>"دستور ➖","callback_data"=>"hazfdastur"]],[["text"=>"منو ➕","callback_data"=>"createmenu"],["text"=>"منو ➖","callback_data"=>"deletemenu"]],[["text"=>"⚜ مدیریت منو ⚜","callback_data"=>"managementmenu"]],[["text"=>"® ریست ربات ®","callback_data"=>"resetbot"]],[["text"=>"✉️ تنظیمات قفل پیام ها ✉️","callback_data"=>"settingmsg"]]]])
-        ]);
-    }
-  }else{
-   if(!strstr(file_get_contents("block.txt"),"$from_id")){
-   if(!is_file("lock")){
-    if(!isset($up->message->forward_from) && !isset($up->message->forward_from_chat)){
-    $json=json_decode(file_get_contents("dasturat.json"),true);
-      if($text=="لغو" && is_file("$from_id.txt")){
-      unlink("$from_id.txt");
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"عملیات لغو شد.",
-        "reply_markup"=>json_encode(["remove_keyboard"=>true])
-      ]);
-    }elseif(is_file("$from_id.txt")){
-      if(isset($up->message->contact)){
-        $user_id=$up->message->contact->user_id;
-        if($user_id==$from_id){
-          bot("forwardMessage",[
-            "chat_id"=>$sudo,
-            "from_chat_id"=>$chat_id,
-            "message_id"=>$msg_id
-          ]);
-          bot("sendMessage",[
-            "text"=>"منتظر پاسخ ادمین باشید.",
-            "chat_id"=>$chat_id,
-            "reply_markup"=>json_encode(["remove_keyboard"=>true])
-          ]);
-          unlink("$from_id.txt");
-        }else{
-          bot("sendMessage",[
-            "text"=>"این تایید هویت مربوط به شما نیست لطفا هویت خود را تایید کنید.",
-            "chat_id"=>$chat_id
-          ]);
-        }
-      }else{
-        bot("sendMessage",[
-            "text"=>"لطفا هویت خود را تایید نمایید.",
-            "chat_id"=>$chat_id
-          ]);
-      }
-    }elseif($text=="/hi" or $text=="بازگشت به منوی اصلی"){
-        $start=str_replace("userid","$from_id",file_get_contents("start.txt"));
-        $start=str_replace("username","$username",$start);
-        $start=str_replace("firstname","$first_name",$start);
-        $start=str_replace("lastname","$last_name",$start);
-        $list=array();
-        $list[0]=array(array("text"=>"پروفایل"));
-        $arrayjs=json_decode(file_get_contents("dasturat.json"),true);
-        unset($arrayjs["empty"]);
-        $n=0;
-        foreach($arrayjs as $key=>$value){
-        if($arrayjs[$key]["type2"]!="zirdastur" and $arrayjs[$key]["type2"]!="zirmenu"){
-          $n++;
-          $list[$n]=array(array("text"=>"$key"));}
-        }
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"$start",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>$list])
-        ]);
-        if(!strstr(file_get_contents("member.txt"),"$from_id")){
-          $file=fopen("member.txt","a");
-          fwrite($file,"\n$from_id");
-          fclose($file);
-        }
-        $member=array_unique(file("member.txt"));
-        $file=fopen("member.txt","w");
-        foreach($member as $value){
-          fwrite($file,"$value");
-        }
-        fclose($file);
-      }elseif($text=="/taidhoviyat"){
-      bot("sendMessage",[
-        "chat_id"=>$chat_id,
-        "text"=>"لطفا برای تایید هویت روی گزینه تایید هویت کلیک کنید.",
-        "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"تایید هویت","request_contact"=>true]],[["text"=>"لغو"]]]])
-      ]);
-      file_put_contents("$from_id.txt","empty");
-    }elseif($text=="پروفایل"){
-        $profile=file_get_contents("profile.txt");
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"$profile"
-        ]);
-      }elseif(isset($json[$text]) && $text!="empty"){
-        if(isset($json[$text]["text"])){
-          bot("sendMessage",[
-            "chat_id"=>$chat_id,
-            "text"=>$json[$text]["text"],
-            "parse_mode"=>"html"
-          ]);
-        }elseif($json[$text]["type"]=="menu"){
-          $array=$json[$text]["commonds"];
-          $list=array();
-          foreach($array as $key=>$value){
-            $list[$key]=array(array("text"=>"$value"));
-          }
-          bot("sendMessage",[
-            "chat_id"=>$chat_id,
-            "text"=>"لطفا یکی از گزینه های زیر را انتخاب کنید.",
-            "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>$list])
-          ]);
-        }elseif($json[$text]["type"]=="sticker"){
-          bot("sendSticker",[
-            "chat_id"=>$chat_id,
-            "sticker"=>$json[$text]["file_id"]
-          ]);
-        }elseif($json[$text]["type"]=="video"){
-          bot("sendVideo",[
-            "chat_id"=>$chat_id,
-            "video"=>$json[$text]["file_id"],
-            "caption"=>$json[$text]["caption"]
-          ]);
-        }elseif($json[$text]["type"]=="video_note"){
-          bot("sendVideoNote",[
-            "chat_id"=>$chat_id,
-            "video_note"=>$json[$text]["file_id"]
-          ]);
-        }elseif($json[$text]["type"]=="photo"){
-          bot("sendPhoto",[
-            "chat_id"=>$chat_id,
-            "photo"=>$json[$text]["file_id"],
-            "caption"=>$json[$text]["caption"]
-          ]);
-        }elseif($json[$text]["type"]=="audio"){
-          bot("sendAudio",[
-            "chat_id"=>$chat_id,
-            "audio"=>$json[$text]["file_id"],
-            "caption"=>$json[$text]["caption"]
-          ]);
-        }elseif($json[$text]["type"]=="voice"){
-          bot("sendVoice",[
-            "chat_id"=>$chat_id,
-            "voice"=>$json[$text]["file_id"],
-            "caption"=>$json[$text]["caption"]
-          ]);
-        }elseif($json[$text]["type"]=="document"){
-          bot("sendDocument",[
-            "chat_id"=>$chat_id,
-            "document"=>$json[$text]["file_id"],
-            "caption"=>$json[$text]["caption"]
-          ]);
-        }
-      }else{
-       if(isset($up->message->text)){
-        bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-        }elseif(isset($up->message->photo)){
-          if($setting["photo"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }elseif(isset($up->message->sticker)){
-          if($setting["sticker"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }elseif(isset($up->message->video)){
-          if($setting["video"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }elseif(isset($up->message->video_note)){
-          if($setting["videoNote"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }elseif(isset($up->message->audio)){
-          if($setting["audio"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }elseif(isset($up->message->voice)){
-          if($setting["voice"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }elseif(isset($up->message->document)){
-          if($setting["document"]=="no"){
-            bot("forwardMessage",[
-          "chat_id"=>$sudo,
-          "from_chat_id"=>$chat_id,
-          "message_id"=>$msg_id
-        ]);
-        bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
-          "parse_mode"=>"markdown"
-        ]);
-          }else{
-            bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
-          "parse_mode"=>"markdown"
-        ]);
-          }
-        }
-      }
-    }else{
-      bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"_لطفا از جایی پیام فروارد نکنید._",
-          "parse_mode"=>"markdown"
-        ]);
-    }}else{
-   bot("sendMessage",[
-          "chat_id"=>$chat_id,
-          "text"=>"ربات توسط ادمین خاموش شده است و به هیچ پیامی پاسخ داده نمی شود."
-        ]);
- }}
-  }
-}elseif(isset($up->callback_query)){
-$data=$up->callback_query->data;
-$cl_msgid=$up->callback_query->message->message_id;
-$cl_fromid=$up->callback_query->from->id;
-$cl_chatid=$up->callback_query->message->chat->id;
-  if($cl_fromid==$sudo){
-    if($vaziyat=="empty"){
-      if($data=="amar"){
-        $count=count($member);
-        bot("editMessageText",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_آمار ربات با احتساب خودتان $count نفر است._",
-          "message_id"=>$cl_msgid,
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["inline_keyboard"=>[[["text"=>"بازگشت 🔙","callback_data"=>"back"]]]])
-        ]);
-      }elseif($data=="resetbot"){
-        file_put_contents("sudo.txt","resetbot");
-        bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"آیا مطمئن هستید ؟",
-            "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"],["text"=>"بله"]]]])
-          ]);
-      }elseif($data=="hazfdastur"){
-       $json=json_decode(file_get_contents("dasturat.json"),true); 
-       if(count($json)!=1){
-         unset($json["empty"]);
-         foreach($json as $key=>$value){
-          if($json[$key]["type"]!="menu"){
-           $list="$list\n$key";
-         }} file_put_contents("sudo.txt","hazfdastur");
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"دستور مورد نظر را برای حذف بفرستید.\nدستورات شما:\n".$list,
-            "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])
-          ]);
-        }else{
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"_دستوری موجود نیست._",
-            "parse_mode"=>"markdown"
-          ]);
-        }
-      }elseif($data=="back"){
-        bot("editMessageText",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_چکاری میتونم انجام بدم ادمین؟_",
-          "message_id"=>$cl_msgid,
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["inline_keyboard"=>[[["text"=>"آمار 👥","callback_data"=>"amar"],["text"=>"پروفایل 👤","callback_data"=>"profile"]],[["text"=>"فروارد همگانی 🗣","callback_data"=>"forward"],["text"=>"بلاک لیست 🚫","callback_data"=>"block"]],[["text"=>"♨️ پیام استارت ربات ♨️","callback_data"=>"start"]],[["text"=>"✏️فروارد بدون عنوان✏️","callback_data"=>"forward2"]],[["text"=>"دستور ➕","callback_data"=>"dasturjadid"],["text"=>"دستور ➖","callback_data"=>"hazfdastur"]],[["text"=>"منو ➕","callback_data"=>"createmenu"],["text"=>"منو ➖","callback_data"=>"deletemenu"]],[["text"=>"⚜ مدیریت منو ⚜","callback_data"=>"managementmenu"]],[["text"=>"® ریست ربات ®","callback_data"=>"resetbot"]],[["text"=>"✉️ تنظیمات قفل پیام ها ✉️","callback_data"=>"settingmsg"]]]])
-        ]);
-      }elseif($data=="settingmsg"){
-        $list=array();
-        $num=0;
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_>>>تنظیمات قفل پیام ها<<<_",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-      }elseif($data=="sticker:yes"){
-        $setting["sticker"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="sticker:no"){
-        $setting["sticker"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="photo:yes"){
-        $setting["photo"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="photo:no"){
-        $setting["photo"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="video:yes"){
-        $setting["video"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="video:no"){
-        $setting["video"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="videoNote:yes"){
-        $setting["videoNote"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-       bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="videoNote:no"){
-        $setting["videoNote"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-       bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="audio:yes"){
-        $setting["audio"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="audio:no"){
-        $setting["audio"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="voice:yes"){
-        $setting["voice"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="voice:no"){
-        $setting["voice"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="document:yes"){
-        $setting["document"]="no";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="document:no"){
-        $setting["document"]="yes";
-        $option=json_encode($setting);
-        file_put_contents("setting.json","$option");
-        $num=0;
-        $list=array();
-        foreach($setting as $key=>$value){
-          $list[$num]=array(array("text"=>"$key","callback_data"=>"$key"),array("text"=>"$value","callback_data"=>"$key:$value"));
-          $num++;
-        }
-        bot("editMessageReplyMarkup",[
-        "chat_id"=>$cl_chatid,
-        "message_id"=>$cl_msgid,
-        "reply_markup"=>json_encode(["inline_keyboard"=>$list])
-        ]);
-        bot("answerCallbackQuery",[
-          "callback_query_id"=>$up->callback_query->id,
-          "text"=>"انجام شد."
-        ]);
-      }elseif($data=="profile"){
-        bot("editMessageText",[
-          "chat_id"=>$cl_chatid,
-          "text"=>file_get_contents("profile.txt"),
-          "message_id"=>$cl_msgid,
-          "reply_markup"=>json_encode(["inline_keyboard"=>[[["text"=>"بازگشت 🔙","callback_data"=>"back"],["text"=>"تغییر 🖊","callback_data"=>"changeprofile"]]]])
-        ]);
-      }elseif($data=="dasturjadid"){
-        file_put_contents("sudo.txt","dasturjadid");
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_لطفا دستور خود را ارسال کنید._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])
-        ]);
-      }elseif($data=="changeprofile"){
-        file_put_contents("sudo.txt","profile");
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_لطفا پیام خود را که فقط حاوی متن باشد ارسال کنید._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])
-        ]);
-      }elseif($data=="forward2"){
-        file_put_contents("sudo.txt","forward2");
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_لطفا پیام خود را ارسال کنید._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])]);
-      }elseif($data=="createmenu"){
-        file_put_contents("sudo.txt","createmenu");
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"لطفا نام منو خود را ارسال کنید.",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])]);
-      }elseif($data=="managementmenu"){
-        $list=array();
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        foreach($json as $key=>$value){
-          if($json[$key]["type"]=="menu"){
-            $list[$key]=array(array("text"=>"$key"));
-          }
-        }
-        $list=array_values($list);
-        if(count($list!=0)){
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"منو و زیر منو های موجود.",
-            "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>$list])
-          ]);       
-        }else{
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"منو و زیر منویی موجود نیست."]);
-        }
-      }elseif($data=="deletemenu"){
-        $json=json_decode(file_get_contents("dasturat.json"),true);
-        $list=array();
-        foreach($json as $key=>$value){
-          if($json[$key]["type"]=="menu"){
-            $list[$key]=array(array("text"=>"$key"));
-          }
-        }
-        $list=array_values($list);
-        if(count($list)!=0){
-          file_put_contents("sudo.txt","deletemenu");
-          $list[count($list)]=array(array("text"=>"لغو"));
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"منو و زیر منو های موجود.",
-            "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>$list])
-          ]);
-        }else{
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"منو و زیر منویی موجود نیست."]);
-        }
-      }elseif($data=="forward"){
-        file_put_contents("sudo.txt","forward");
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_لطفا پیام خود را ارسال کنید._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])]);
-      }elseif($data=="start"){
-        $txt=file_get_contents("start.txt");
-        bot("editMessageText",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"$txt",
-          "message_id"=>$cl_msgid,
-          "reply_markup"=>json_encode(["inline_keyboard"=>[[["text"=>"بازگشت 🔙","callback_data"=>"back"],["text"=>"تغییر 🖊","callback_data"=>"changestart"]]]])
-        ]);
-      }elseif($data=="changestart"){
-        file_put_contents("sudo.txt","start");
-        bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_لطفا پیام خود را که فقط حاوی متن باشد ارسال کنید.کلمات زیر جایگزین خواهند شد.\nuserid با آیدی فرد\nfirstname با نام فرد\nlastname با نام خانوادگی فرد\nusername با یوزرنیم فرد._",
-          "parse_mode"=>"markdown",
-          "reply_markup"=>json_encode(["resize_keyboard"=>true,"keyboard"=>[[["text"=>"لغو"]]]])
-        ]);
-      }elseif($data=="block"){
-        $array=explode("\n",str_replace("block\n","",file_get_contents("block.txt")));
-        if($array[0]!="block"){
-          $list=array();
-          foreach($array as $key=>$value){
-            $list[$key]=array(array("text"=>"$value","callback_data"=>"$value"));
-          }
-          bot("sendMessage",[
-            "chat_id"=>$cl_chatid,
-            "text"=>"_>>>بلاک لیست<<<_",
-            "parse_mode"=>"markdown",
-            "reply_markup"=>json_encode(array("inline_keyboard"=>$list))
-          ]);
-        }else{
-          bot("sendMessage",[
-          "chat_id"=>$cl_chatid,
-          "text"=>"_بلاک لیست خالی است._",
-          "parse_mode"=>"markdown"
-          ]);
-        }
-      }else{
-        file_put_contents("block.txt",str_replace("\n$data","",file_get_contents("block.txt")));
-        bot("sendMessage",[
-          "chat_id"=>$data+0,
-          "text"=>"_شما ازبلاک خارج شدید._",
-          "parse_mode"=>"markdown"
-        ]);
-        $array=explode("\n",str_replace("block\n","",file_get_contents("block.txt")));
-        if($array[0]!="block"){
-          $list=array();
-          foreach($array as $key=>$value){
-            $list[$key]=array(array("text"=>"$value","callback_data"=>"$value"));
-          }
-          bot("editMessageReplyMarkup",[
-            "chat_id"=>$cl_chatid,
-            "message_id"=>$cl_msgid, "reply_markup"=>json_encode(array("inline_keyboard"=>$list))
-          ]);
-        }else{
-          bot("editMessageText",[
-            "chat_id"=>$cl_chatid,
-            "message_id"=>$cl_msgid,
-            "text"=>"_بلاک لیست خالی است._",
-            "parse_mode"=>"markdown"
-          ]);
-        }
-      }
-    }else{
-      bot("answerCallbackQuery",[
-        "callback_query_id"=>$up->callback_query->id,
-        "text"=>"شما در حال انجام عملیات دیگری هستید.ابتدا آن را لغو کنید.",
-        "show_alert"=>true
-      ]);
-    }
-  }else{
-    bot("answerCallbackQuery",[
-        "callback_query_id"=>$up->callback_query->id,
-        "text"=>"شما ادمین ربات نیستید.",
-        "show_alert"=>true
-      ]);
-  }
-}
-?>
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"یکی از گزینه های زیر را انتحاب کنید :",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				[
+                   ['text'=>'اضافه کردن کلمه'],['text'=>'حذف کلمه']
+                ],
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+		
+	}
+	elseif ($textmessage == 'اضافه کردن کلمه' && $bottype == 'gold' && $from_id == $admin) {
+				save($from_id."/step.txt","set word");
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"کلمه ای که میخواهید به آن پاسخ داده شود را ارسال نمایید
+مثال :
+`سلام`",
+			'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+				
+                 [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == '▶️ ویرایش پیام استارت' && $from_id == $admin) {
+	$sttxt = file_get_contents("data/start_txt.txt");
+	save($from_id."/step.txt","Edit Start Text");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"*تنظیم کردن متن استارت*
+پیام استارت قبلی :
+➖➖➖➖➖➖➖➖➖➖
+`".$sttxt."`
+➖➖➖➖➖➖➖➖➖➖
+*لطفا* پیام استارت جدید را وارد کنید 😃",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == '⏸ ویرایش پیام پیشفرض' && $from_id == $admin) {
+	$sttxt = file_get_contents("data/pmsend_txt.txt");
+	save($from_id."/step.txt","Edit Message Delivery");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"*تنظیم کردن متن پیشفرض*
+پیام پیشفرض قبلی :
+➖➖➖➖➖➖➖➖➖➖
+`".$sttxt."`
+➖➖➖➖➖➖➖➖➖➖
+*لطفا* پیام پیشفرض جدید را وارد کنید 😃",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == '⚙ تنظیمات' && $from_id == $admin) {
+	
+	var_dump(makereq('sendMessage',[
+			'chat_id'=>$update->message->chat->id,
+			'text'=>"به تنظیمات روبات خوش آمدید.
+`
+ 🚫 = قفل شده.
+ ✅ = آزاد"."`",
+			'parse_mode'=>'MarkDown',
+			'reply_markup'=>json_encode([
+				'inline_keyboard'=>[
+					[
+						['text'=>"دسترسی استیکر",'callback_data'=>"sticker"],['text'=>$_sticker,'callback_data'=>"sticker"]
+					],
+					[
+						['text'=>"دسترسی فیلم",'callback_data'=>"video"],['text'=>$_video,'callback_data'=>"video"]
+					],
+					[
+						['text'=>"دسترسی ویس",'callback_data'=>"voice"],['text'=>$_voice,'callback_data'=>"voice"]
+					],
+					[
+						['text'=>"دسترسی فایل",'callback_data'=>"file"],['text'=>$_file,'callback_data'=>"file"]
+					],
+					[
+						['text'=>"دسترسی عکس",'callback_data'=>"photo"],['text'=>$_photo,'callback_data'=>"photo"]
+					],
+					[
+						['text'=>"دسترسی آهنگ",'callback_data'=>"music"],['text'=>$_music,'callback_data'=>"music"]
+					],
+					[
+						['text'=>"دسترسی فروارد",'callback_data'=>"forward"],['text'=>$_forward,'callback_data'=>"forward"]
+					],
+					[
+						['text'=>"عضویت در گروه",'callback_data'=>"joingp"],['text'=>$_joingp,'callback_data'=>"joingp"]
+					]
+				]
+			])
+		]));
+	
+	}
+	
+	elseif ($textmessage == '👁 شماره ی من رو نشون بده' && $from_id == $admin) {
+	$anumber = file_get_contents("data/profile/number.txt");
+	$aname= file_get_contents("data/profile/cname.txt");
+	makereq('sendContact',[
+	'chat_id'=>$chat_id,
+	'phone_number'=>$anumber,
+	'first_name'=>$aname
+	]);
+	}
+	elseif ($textmessage == 'سن' && $from_id == $admin) {
+	save($from_id."/step.txt","Set Age");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"لطفا سن خود را وارد کنید!",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == 'نام' && $from_id == $admin) {
+	save($from_id."/step.txt","Set Name");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"لطفا نام خو را وارد کنید!",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == 'درباره شما' && $from_id == $admin) {
+	save($from_id."/step.txt","Set Bio");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"لطفا بیوگرافی خود را وارد کنید!",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == '☎️  تنظیمات کانتکت' && $from_id == $admin) {
+	save($from_id."/step.txt","Set Contact");
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"یک گزینه را انتخاب کنید.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🌐 تنظیم شماره تلفن' , 'request_contact' => true]
+                ],
+              	[
+                   ['text'=>'👁 شماره ی من رو نشون بده']
+                ],
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	
+	elseif ($textmessage == '👥 آمار' && $from_id == $admin) {
+	$usercount = -1;
+	$fp = fopen( "data/users.txt", 'r');
+	while( !feof( $fp)) {
+    		fgets( $fp);
+    		$usercount ++;
+	}
+	fclose( $fp);
+	SendMessage($chat_id,"👥 تعداد اعضای ربات : `".$usercount."`");
+	}
+	
+	elseif ($textmessage == '⚫️ لیست سیاه' && $from_id == $admin) {
+	$usercount = -1;
+	$fp = fopen( "data/blocklist.txt", 'r');
+	while( !feof( $fp)) {
+    		$line = fgets( $fp);
+    		$usercount ++;	
+			
+			if ($line == '') {
+				$usercount = $usercount-1;
+			}
+	}
+	fclose( $fp);
+	SendMessage($chat_id,"⚫️ تعداد اعضای بلاک شده ربات : `".$usercount."`");
+	}
+	
+	elseif ($textmessage == 'ارتقا ربات' && $from_id == $admin) {
+	$text = "
+🎉 همین الان ربات خود را VIP کنید! 🎉
+➖➖➖➖➖➖➖➖➖➖➖➖➖
+✅ امکانات فوق العاده ای به ربات خود دهید.
+
+1⃣ حذف تمامی پیام های تبلیغاتی ربات ❌
+2⃣ مدیریت و ایجاد دکمه حرفه ای برای ربات ⌨
+3⃣ رفع مشکلات شما در ربات پشتیبان پی وی ساز 🗣
+
+ℹ️ هزینه تبدیل به ربات (VIP) سالیانه 2,000 تومان میباشد.
+
+لینک درگاه اینترنتی خرید VIP برای ربات شما :
+🌐 http://t.me/AmirAdminPvBot
+
+`اگر ربات شما ویژه است به این پیام توجه نکنید !`";
+	SendMessage($chat_id,$text);
+	}
+	
+	elseif ($textmessage == '⚓️ راهنما' && $from_id == $admin) {
+	$text = "
+	سلام
+
+- این ربات جهت راحتی شما و پشتیبانی از ربات،کانال،گروه یا حتی وبسایت شما ساخته شده است
+
+- نوشته شده به زبان *PHP*
+
+- برنامه نویس ها : @AmIR_BotSaz_Bot
+
+برای مشاهده ی دستورات از دکمه های زیر استفاده کنید 👇
+
+Copy Right 2017 ©
+@AmIRBotSaz_Channel
+	";
+	
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>$text,
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"🔰 دستورات"],['text'=>"🔰 دکمه ها"]
+                ],
+                [ 
+                 ['text'=>"🏠 برگشت به صفحه اصلی"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+	}
+	elseif ($textmessage == '👤 پروفایل') {
+		if ($from_id == $admin) {
+	var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"پروفایل خود را مدیریت کنید.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"نام"],['text'=>"سن"],['text'=>"درباره شما"]
+                ],
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+		}
+		else {
+			$name = file_get_contents("data/profile/name.txt");
+			$age = file_get_contents("data/profile/age.txt");
+			$bio = file_get_contents("data/profile/bio.txt");
+			$protxt = "";
+			if ($name == '' && $age == '' && $bio == '') {
+				$protxt = "📭 پروفایل `خالی` است . . . !";
+			}
+			if ($name != '') {
+				$protxt = $protxt."\n👤 نام : ".$name;
+			}
+			
+			if ($age != '') {
+				$protxt = $protxt."\n🎓 سن : ".$age;
+			}
+			
+			if ($bio != '') {
+				$protxt = $protxt."\nℹ️ درباره : ".$bio;
+			}
+			SendMessage($chat_id,$protxt);
+		}
+	}
+	elseif ($textmessage == '🔰 دستورات' && $from_id == $admin) {
+	$text = " 
+	🔰دستورات
+
+- برای پاسخ با پیام های کاربران روی ان ها ریپلای کنید و پیام خود را ارسال کنید.
+
++ لیست دستورات
+
+  */ban :* 
+ روی پیام رپلای کنید و  ban/ را ارسال کنید
+ برای اضافه کردن کاربر به لیت سیاه
+
+
+  */unban :* 
+ روی پیام رپلای کنید و  unban/ را ارسال کنید
+ برای پاک کردن کاربر از لیست سیاه
+
+ 
+  */forward :* 
+ روی پیام رپلای کنید و  forward/ را ارسال کنید
+ جهت فروارد کردن پیام برای کاربر 
+ ابتدا روی شخس ریپلای کنید و forward/ را ارسال کنید و بعد پیام مورد نظرتان را اینجا فروارد کنید
+
+
+  */share :*  
+ روی پیام رپلای کنید و  share/ را ارسال کنید
+ برای شیر کردن کانتکت(شماره شما) [شما ابتدا باید از بخش تنظیمات کانتکت شماره ی خود را ثبت کنید]
+	";
+	SendMessage($chat_id,$text);
+	}
+	
+	elseif ($textmessage == '🔰 دکمه ها' && $from_id == $admin) {
+	$text = "
+	🔰دکمه ها
+
++ Buttons List
+
+  🗣 پیام همگانی :
+  ارسال پیام به اعضا و گروه ها.
+
+  ⚙ تنظیمات :
+  تنظیمات ربات.
+
+  ▶️ ویرایش پیام استارت :
+  ویرایش پیام استارت ربات شما.
+
+  ⏸ ویرایش پیام پیشفرض :
+  ویرایش پیام پیشفرض ربات شما.
+
+  👥 آمار :
+  مشاهده ی تعداد اعضا و گروه ها.
+
+  ⚫️ لیست سیاه :
+  مشاهده ی لیست سیاه.
+
+  ☎️  تنظیمات کانتکت :
+  تنظیمات شماره ی شما.
+
+  👤 پروفایل :
+  تنظیمات پروفایل شما.
+	";
+	SendMessage($chat_id,$text);
+	}
+	
+	elseif($textmessage == '/start')
+	{
+		$txt = file_get_contents("data/start_txt.txt");
+		//==============
+		if ($type == "admin") {
+		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"به روبات خودتون خوش آومدین.",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"🗣 پیام همگانی"],['text'=>"⚓️ راهنما"],['text'=>"⚙ تنظیمات"]
+                ],
+                [
+                   ['text'=>"▶️ ویرایش پیام استارت"],['text'=>"⏸ ویرایش پیام پیشفرض"]
+                ],
+                [
+                   ['text'=>"👥 آمار"],['text'=>"ارتقا ربات"],['text'=>"⚫️ لیست سیاه"]
+                ],
+                [
+                   ['text'=>"☎️  تنظیمات کانتکت"],['text'=>"👤 پروفایل"],['text'=>"امکانات ویژه"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		}
+    		else {
+    		if ($tb != "No") {
+
+    		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>$txt."\n\n*Create Your Bot *@CrPvRoBot",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"👤 پروفایل"]
+				],
+                [
+				   ['text'=>"🚀 ارسال شماره شما",'request_contact' => true],['text'=>"⚓️ ارسال مکان شما",'request_location' => true]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		}
+    		else {
+    		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>$txt,
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>"👤 پروفایل"]
+				],
+                [
+				   ['text'=>"🚀 ارسال شماره شما",'request_contact' => true],['text'=>"⚓️ ارسال مکان شما",'request_location' => true]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		}
+    		}
+		//==============
+		$users = file_get_contents("data/users.txt");
+		if (strpos($users , "$chat_id") !== false)
+		{ 
+		
+		}
+		else { 
+			$myfile2 = fopen("data/users.txt", "a") or die("Unable to open file!");	
+			fwrite($myfile2, "$from_id\n");
+			fclose($myfile2);
+			mkdir("data/".$from_id);
+			save($from_id."/type.txt","member");
+			save($from_id."/step.txt","none");
+		     }
+	}
+	elseif ($reply != null && $from_id == $admin) {
+		if ($textmessage == '/share') {
+		$anumber = file_get_contents("data/profile/number.txt");
+		$aname= file_get_contents("data/profile/cname.txt");
+		makereq('sendContact',[
+		'chat_id'=>$reply,
+		'phone_number'=>$anumber,
+		'first_name'=>$aname
+		]);
+		SendMessage($chat_id,"ارسال شد .");
+		}
+		elseif ($textmessage == '/forward') {
+		SendMessage($chat_id,"پیام خود را فروارد کنید !");	
+		save($from_id."/step.txt","Forward");
+		save("forward_id.txt","$reply");
+		}
+		elseif ($textmessage == '/ban') {
+			$myfile2 = fopen("data/blocklist.txt", "a") or die("Unable to open file!");	
+			fwrite($myfile2, "$reply\n");
+			fclose($myfile2);
+			SendMessage($chat_id,"*User Banned!*");
+			SendMessage($reply,"*You Are Banned!*");
+		}
+		elseif ($textmessage == '/unban') {
+			
+			$newlist = str_replace($reply,"",$list);
+			save("blocklist.txt",$newlist);
+			SendMessage($chat_id,"*User UnBanned!*");
+			SendMessage($reply,"*You Are UnBanned!*");
+		}
+		else {
+	SendMessage($reply ,$textmessage);
+	SendMessage($chat_id,"پیام ارسال شد .");	
+		}
+	}
+	
+	elseif ($textmessage == '/creator' && $bottype != "gold") {
+    		var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"ساخته شده توسط @AmIR_BotSaz_Bot",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'inline_keyboard'=>[
+                [
+                   ['text'=>'Create Your Bot','url'=>"http://t.me/AmIR_BotSaz_Bot"]
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+    		
+	}
+	elseif ($forward != null && $_forward == "⛔️") {
+		SendMessage($chat_id,"Locked!");
+	}
+	elseif (strpos($textmessage , "/toall") !== false  || $textmessage == "🗣 پیام همگانی") {
+		if ($from_id == $admin) {
+			save($from_id."/step.txt","Send To All");
+				var_dump(makereq('sendMessage',[
+        	'chat_id'=>$update->message->chat->id,
+        	'text'=>"پیام خود را ارسال کنید!",
+		'parse_mode'=>'MarkDown',
+        	'reply_markup'=>json_encode([
+            	'keyboard'=>[
+                [
+                   ['text'=>'🏠 برگشت به صفحه اصلی']
+                ]
+            	],
+            	'resize_keyboard'=>true
+       		])
+    		]));
+		}
+		else {
+			SendMessage($chat_id,"شما ادمین نیستید !");
+		}
+	}
+	else
+	{
+		if ($from_id != $admin) {
+		$txt = file_get_contents("data/pmsend_txt.txt");
+		SendMessage($chat_id,$txt);
+		Forward($admin,$chat_id,$message_id); 
+		}
+		else {
+		SendMessage($chat_id,"🔸یافت نشد !");
+		}
+	}
+	
+	
+	?>

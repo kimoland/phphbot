@@ -54,31 +54,6 @@ $text = $message->text;
 $step = file_get_contents("data/".$from_id."/step.txt");
 $mtn = file_get_contents("data/".$from_id."/mtn.txt");
 //==========================================//
-if(preg_match('/king',$text)){
- if (!file_exists("data/$from_id/step.txt")) {
-        mkdir("data/$from_id");
-        save("data/$from_id/step.txt","no");
-          $myfile2 = fopen("data/users.txt", "a") or die("Unable to open file!");
-        fwrite($myfile2, "$from_id\n");
-        fclose($myfile2);
-    }
-sendaction($chat_id, typing);
-        bot('sendmessage', [
-                'chat_id' => $chat_id,
-                'text' =>"",
-                'parse_mode'=>$mode,
-      'reply_markup'=>json_encode([
-            'inline_keyboard'=>[
-              [
-           ['text'=>"Channel",'url'=>"http://telegram.me/king_network7"]
-              ]
-              ]
-        ])
-            ]);
-        }
-
-
-//==========================================//
 elseif($text == "/panel" && $from_id == $ADMIN){
 sendaction($chat_id, typing);
         bot('sendmessage', [
@@ -167,15 +142,4 @@ bot('senddocument',[
     'document'=>new CURLFile("$mtn"),
   ]);
 }
-/*
-کانال سورس خونه ! پر از سورس هاي ربات هاي تلگرامي !
-
-کلی قالب ، وب سرویس ، سورس ربات ، سورس برنامه اندروید و کامپیوتر و کلی امکانات...
-
-لطفا در کانال ما عضو شويد 
-
-@source_home
-
-https://t.me/source_home
-*/
 ?>

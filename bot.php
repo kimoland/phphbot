@@ -47,7 +47,9 @@ $step = file_get_contents("data/".$from_id."/step.txt");
 $members = file_get_contents('data/users.txt');
 $ban = file_get_contents('banlist.txt');
 $uvip = file_get_contents('data/vips.txt');
-$chanell = 'Tiyak_Team';
+$chanell = '@king_network7';
+$truechannel = json_decode(file_get_contents("https://api.telegram.org/bot$token/getChatMember?chat_id=$chanell&user_id=$from_id"));
+$tch = $truechannel->result->status;
 function SendMessage($ChatId, $TextMsg)
 {
 makereq('sendMessage',[
@@ -80,37 +82,6 @@ fclose($myfile);
 if (strpos($ban , "$from_id") !== false  ) {
 SendMessage($chat_id,"متاسفیم😔\nدسترسی شما از این سرور مسدود شده است.⚫️");
 	}
-elseif(isset($update->callback_query))
-{$callbackMessage = '';var_dump(makereq('answerCallbackQuery',['callback_query_id'=>$update->callback_query->id,'text'=>$callbackMessage]));
-$chat_id = $update->callback_query->message->chat->id;
-$message_id = $update->callback_query->message->message_id;
-$data = $update->callback_query->data;
-if (strpos($data, "del") !== false )
-{$botun = str_replace("del ","",$data);
-unlink("bots/".$botun."/index.php");
-save("data/$chat_id/bots.txt","");
-save("data/$chat_id/tedad.txt","0");
-var_dump(makereq('editMessageText',
-['chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"ربات شما با موفقیت حذف شد !",
-'reply_markup'=>json_encode(['inline_keyboard'=>
-[[['text'=>"به کانال ما بپیوندید",'url'=>"https://telegram.me/Tiyak_Team"]]]
-                            ])
-]                )
-        );
-}
-else{var_dump(makereq('editMessageText',
-['chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"خطا",
-'reply_markup'=>json_encode(['inline_keyboard'=>
-[[['text'=>"به کانال ما بپیوندید",'url'=>"https://telegram.me/Tiyak_Team"]]]
-                            ])
-]                    )
-             );
-   }
-}
 elseif ($textmessage == '🔙 برگشت')
 {save("data/$from_id/step.txt","none");
 var_dump(makereq('sendMessage',[
@@ -209,6 +180,20 @@ var_dump(makereq('sendMessage',[
         )
     );
 }
+elseif($tch != 'member' && $tch != 'creator' && $tch != 'administrator'){
+    bot('sendMessage',[
+                   'chat_id'=>$chat_id,
+                   'text'=>"📛 برای حمایت از ما و همچنان ربات ابتدا وارد کانال های زیر بشید 👇
+   
+   🆔 $channel
+   
+   ✅ سپس روی JOIN بزنید و به ربات برگشته عبارت 👇
+   
+   🔸 /start
+   
+   ✴️ رو بزنید تا دکمه های ربات نمایش داده بشن👌",
+   ]);
+   }
 elseif($textmessage == '/start')
 {
 if (!file_exists("data/$from_id/step.txt"))
@@ -523,14 +508,4 @@ var_dump(makereq('sendMessage',[
         ])
     ]));
  }
-
-else{
-    SendMessage($chat_id,"❗️دستور اشتباه است❗️");}
-$txxt = file_get_contents('data/users.txt');
-    $pmembersid= explode("\n",$txxt);
-    if (!in_array($chat_id,$pmembersid)){
-      $aaddd = file_get_contents('data/users.txt');
-      $aaddd .= $chat_id."\n";
-      file_put_contents('data/users.txt',$aaddd);
-    }
 ?>

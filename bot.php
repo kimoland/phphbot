@@ -78,7 +78,6 @@ if (!file_exists("data/$from_id/ali.txt")) {
         fwrite($myfile2, "$from_id\n");
         fclose($myfile2);
     }
-	sendmessage($chat_id , "");
 	}
 elseif($text == "منوی اصلی🔁"){
 file_put_contents("data/$from_id/ali.txt","no");

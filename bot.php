@@ -23,15 +23,8 @@ mkdir("data/$chat_id");
 $step = file_get_contents("data/$from_id/step.txt");
 $type = file_get_contents("data/$from_id/type.txt");
 $panel = file_get_contents("data/$from_id/panel.txt");
-$Dev = "710732845";// ایدی عددی مالک ربات
-$admini = "710732845";// ایدی عددی مالک ربات
+$admini = 710732845;// ایدی عددی مالک ربات
 $ping = sys_getloadavg();
-$fox = file_get_contents("data/$user_id/sms.txt");
-$foxfree1 = file_get_contents("data/$user_id/smsf1.txt");
-$foxfree2 = file_get_contents("data/$user_id/smsf2.txt");
-$foxvip = file_get_contents("data/$user_id/vip.txt");
-$foxvip2 = file_get_contents("data/$user_id/vip2.txt");
-$foxvip3 = file_get_contents("data/$user_id/vip3.txt");
 $panel = file_get_contents("panel.txt");
 # -----
 function bot($method,$datas=[]){$url = 'https://api.telegram.org/bot'.API_KEY.'/'.$method;$ch = curl_init();
@@ -103,12 +96,12 @@ mkdir("data");
 mkdir("data/$user_id");
 ////ایدی کانال خود را جایگزین بکنید
 # -- panel admin --
-if ($txt_msg == "/panel" && $from_id == $Dev or $txt_msg == "پنل مدیریت" && $from_id == $Dev){
+if ($txt_msg == "/panel" && $from_id == $admini or $txt_msg == "پنل مدیریت" && $from_id == $admini){
 sendmsg($user_id,"به پنل مدیریت خوش آمدید",$msg_id,$sasan);
 }
 
 # -- Start -- #
-if ($txt_msg == "/startt" or $txt_msg == "🏛خانه"){
+if ($txt_msg == "/start" or $txt_msg == "🏛خانه"){
 file_put_contents("data/$user_id/sms.txt","none");
 $user = file_get_contents('Member.txt');
 $members = explode("\n",$user);
@@ -153,7 +146,7 @@ sendmsg($user_id,"⚠️لطفا با دقت تمامی قوانین را بخو
 ",$msg_id,$bot);
 }
 #-------panel admin---------#
-elseif ($text == 'آمار ربات' && $from_id == $Dev) {
+elseif ($text == 'آمار ربات' && $from_id == $admini) {
 $user = file_get_contents("Member.txt");
 $member_id = explode("\n",$user);
 $member_count = count($member_id) -1;
@@ -163,7 +156,7 @@ bot('sendMessage',[
 'parse_mode' => 'MarkDown'
 ]);
 }
-elseif($text == "مشخصات ربات" && $chat_id == $Dev){
+elseif($text == "مشخصات ربات" && $chat_id == $admini){
 $load = sys_getloadavg();
 $mem = memory_get_usage();
 $ver = phpversion();           
@@ -185,7 +178,7 @@ bot('sendmessage',[
 'parse_mode'=>"html"
 ]);
 }
-if($text == "حذف لیست بن ربات" && $chat_id == $Dev){
+if($text == "حذف لیست بن ربات" && $chat_id == $admini){
 file_put_contents("data/$from_id/step.txt","delete");
 bot('sendmessage',[
 'chat_id'=>$chat_id,
@@ -202,7 +195,7 @@ bot('sendmessage',[
 ])
 ]);
 }
-elseif($step == "delete" && $chat_id == $Dev){
+elseif($step == "delete" && $chat_id == $admini){
 file_put_contents("data/$from_id/step.txt","none");
 DeleteFolder("data/spam");
 sendmsg($user_id,"حذف شد",$msg_id);
@@ -217,7 +210,7 @@ bot('sendmessage',[
 'parse_mode'=>"html"
 ]);
 }
-elseif ($text == 'پیام همگانی' && $chat_id == $Dev){
+elseif ($text == 'پیام همگانی' && $chat_id == $admini){
 file_put_contents("panel.txt","Send");
 bot('sendMessage',[
 'chat_id' => $chat_id,
@@ -234,7 +227,7 @@ bot('sendMessage',[
 ]);
 }
 
-elseif($panel == "Send" && $chat_id == $Dev){
+elseif($panel == "Send" && $chat_id == $admini){
 file_put_contents("panel.txt","none");
 Bot('sendmessage',[
 'chat_id'=>$chat_id,

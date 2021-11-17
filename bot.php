@@ -50,7 +50,7 @@ if(!file_exists("dasturat.json")){
   file_put_contents("dasturat.json",json_encode(["empty"=>"yes"]));
 }
 if(!file_exists("start.txt")){
-  file_put_contents("start.txt","باسلام.خوش آمدید.\nلطفا پیام خود را ارسال نمایید.");
+  file_put_contents("start.txt","");
 }
 if(!file_exists("block.txt")){
   file_put_contents("block.txt","block");
@@ -749,7 +749,7 @@ if(isset($up->message)){
             "chat_id"=>$chat_id
           ]);
       }
-    }elseif($text=="/start" or $text=="بازگشت به منوی اصلی"){
+    }elseif($text=="/hi" or $text=="بازگشت به منوی اصلی"){
         $start=str_replace("userid","$from_id",file_get_contents("start.txt"));
         $start=str_replace("username","$username",$start);
         $start=str_replace("firstname","$first_name",$start);

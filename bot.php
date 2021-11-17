@@ -23,7 +23,7 @@ mkdir("data/$chat_id");
 $step = file_get_contents("data/$from_id/step.txt");
 $type = file_get_contents("data/$from_id/type.txt");
 $panel = file_get_contents("data/$from_id/panel.txt");
-$Dev = 95412674;// ایدی عددی مالک ربات
+$Dev = 710732845;// ایدی عددی مالک ربات
 $admini = "710732845";// ایدی عددی مالک ربات
 $ping = sys_getloadavg();
 $fox = file_get_contents("data/$user_id/sms.txt");

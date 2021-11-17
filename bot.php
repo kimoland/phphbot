@@ -864,7 +864,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
         }elseif(isset($up->message->photo)){
@@ -876,7 +876,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
@@ -895,7 +895,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
@@ -914,7 +914,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
@@ -933,7 +933,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
@@ -952,7 +952,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
@@ -971,7 +971,7 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
@@ -990,13 +990,13 @@ if(isset($up->message)){
         ]);
         bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_پیام شما با موفقیت ارسال شد._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }else{
             bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_این نوع پیام توسط ادمین قفل شده است.لطفا پیام دیگری ارسال کنید._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
           }
@@ -1005,7 +1005,7 @@ if(isset($up->message)){
     }else{
       bot("sendMessage",[
           "chat_id"=>$chat_id,
-          "text"=>"_لطفا از جایی پیام فروارد نکنید._",
+          "text"=>"",
           "parse_mode"=>"markdown"
         ]);
     }}else{

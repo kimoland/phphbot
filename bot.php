@@ -1,5 +1,21 @@
 <?php
 define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
+function objectToArrays($object)
+{
+if (!is_object($object) && !is_array($object)) {
+return $object;
+}
+if (is_object($object)) {
+$object = get_object_vars($object);
+}
+return array_map("objectToArrays", $object);
+}
+function save($filename,$TXTdata)
+{
+$myfile = fopen($filename, "w") or die("Unable to open file!");
+fwrite($myfile, "$TXTdata");
+fclose($myfile);
+}
 //====================(@Source_Home)======================//
 #variables
 $get = json_decode(file_get_contents('php://input'));

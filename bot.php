@@ -78,39 +78,9 @@ fwrite($myfile, "$TXTdata");
 fclose($myfile);
 }
 if (strpos($ban , "$from_id") !== false  ) {
-SendMessage($chat_id,"متاسفیم😔\nدسترسی شما از این سرور مسدود شده است.⚫️");
+SendMessage($chat_id,"");
 	}
-elseif(isset($update->callback_query))
-{$callbackMessage = '';var_dump(makereq('answerCallbackQuery',['callback_query_id'=>$update->callback_query->id,'text'=>$callbackMessage]));
-$chat_id = $update->callback_query->message->chat->id;
-$message_id = $update->callback_query->message->message_id;
-$data = $update->callback_query->data;
-if (strpos($data, "del") !== false )
-{$botun = str_replace("del ","",$data);
-unlink("bots/".$botun."/index.php");
-save("data/$chat_id/bots.txt","");
-save("data/$chat_id/tedad.txt","0");
-var_dump(makereq('editMessageText',
-['chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"ربات شما با موفقیت حذف شد !",
-'reply_markup'=>json_encode(['inline_keyboard'=>
-[[['text'=>"به کانال ما بپیوندید",'url'=>"https://telegram.me/@1"]]]
-                            ])
-]                )
-        );
-}
-else{var_dump(makereq('editMessageText',
-['chat_id'=>$chat_id,
-'message_id'=>$message_id,
-'text'=>"خطا",
-'reply_markup'=>json_encode(['inline_keyboard'=>
-[[['text'=>"به کانال ما بپیوندید",'url'=>"https://telegram.me/@1"]]]
-                            ])
-]                    )
-             );
-   }
-}
+
 elseif ($textmessage == '🔙 برگشت')
 {save("data/$from_id/step.txt","none");
 var_dump(makereq('sendMessage',[
@@ -119,9 +89,8 @@ var_dump(makereq('sendMessage',[
 'parse_mode'=>'Html',
 'reply_markup'=>json_encode(['keyboard'=>
 [
-[['text'=>"🎯ساخت ربات"],['text'=>"🎗ربات های من"]],
-[['text'=>"📋راهنما"],['text'=>"🗑حذف ربات"],['text'=>"🔰قوانین"]],
-[['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
+    [['text'=>"تبدیل فایل"],['text'=>"🎗ربات های من"]],
+    [['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
 ],
 'resize_keyboard'=>false
                             ])
@@ -141,8 +110,7 @@ var_dump(makereq('sendMessage',[
 'parse_mode'=>'Html',
 'reply_markup'=>json_encode(['keyboard'=>
 [
-[['text'=>"🎯ساخت ربات"],['text'=>"🎗ربات های من"]],
-[['text'=>"📋راهنما"],['text'=>"🗑حذف ربات"],['text'=>"🔰قوانین"]],
+[['text'=>"تبدیل فایل"],['text'=>"🎗ربات های من"]],
 [['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
 ],
 'resize_keyboard'=>false
@@ -226,9 +194,8 @@ var_dump(makereq('sendMessage',[
 'parse_mode'=>'Html',
 'reply_markup'=>json_encode(['keyboard'=>
 [
-[['text'=>"🎯ساخت ربات"],['text'=>"🎗ربات های من"]],
-[['text'=>"📋راهنما"],['text'=>"🗑حذف ربات"],['text'=>"🔰قوانین"]],
-[['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
+    [['text'=>"تبدیل فایل"],['text'=>"🎗ربات های من"]],
+    [['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
 ],
 'resize_keyboard'=>false
                             ])
@@ -471,8 +438,6 @@ var_dump(makereq('sendMessage',[
     ]));
  }
 
-else
-{SendMessage($chat_id,"❗️دستور اشتباه است❗️");}
 $txxt = file_get_contents('data/users.txt');
     $pmembersid= explode("\n",$txxt);
     if (!in_array($chat_id,$pmembersid)){

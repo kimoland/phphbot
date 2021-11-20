@@ -47,9 +47,6 @@ $step = file_get_contents("data/".$from_id."/step.txt");
 $members = file_get_contents('data/users.txt');
 $ban = file_get_contents('banlist.txt');
 $uvip = file_get_contents('data/vips.txt');
-$chanell = '@king_network7';
-$truechannel = json_decode(file_get_contents("https://api.telegram.org/bot$token/getChatMember?chat_id=$chanell&user_id=$from_id"));
-$tch = $truechannel->result->status;
 function SendMessage($ChatId, $TextMsg)
 {
 makereq('sendMessage',[
@@ -180,20 +177,7 @@ var_dump(makereq('sendMessage',[
         )
     );
 }
-elseif($tch != 'member' && $tch != 'creator' && $tch != 'administrator'){
-    bot('sendMessage',[
-                   'chat_id'=>$chat_id,
-                   'text'=>"📛 برای حمایت از ما و همچنان ربات ابتدا وارد کانال های زیر بشید 👇
-   
-   🆔 $channel
-   
-   ✅ سپس روی JOIN بزنید و به ربات برگشته عبارت 👇
-   
-   🔸 /start
-   
-   ✴️ رو بزنید تا دکمه های ربات نمایش داده بشن👌",
-   ]);
-   }
+
 elseif($textmessage == '/start')
 {
 if (!file_exists("data/$from_id/step.txt"))

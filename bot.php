@@ -103,7 +103,7 @@ var_dump(makereq('sendMessage',[
 
 elseif($textmessage == '/start')
 {
-  elseif (!file_exists("data/$from_id/step.txt"))
+if (!file_exists("data/$from_id/step.txt"))
 {mkdir("data/$from_id");
 save("data/$from_id/step.txt","none");
 save("data/$from_id/tedad.txt","0");

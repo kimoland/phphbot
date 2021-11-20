@@ -1,712 +1,1102 @@
 <?php
-/*
-کانال سورس خونه ! پر از سورس هاي ربات هاي تلگرامي !
-لطفا در کانال ما عضو شويد 
-@source_home
-https://t.me/source_home
-*/
-ob_start();
-$API_KEY = '1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA'; //tokon rbttn ro inja jiy gzry knid
-$channel = "@hslu78tvhos254"; //ID channel bdne @
-$admin = '710732845'; //ID addy admin ro Source_Home.php set webhook anjm bdid
-//Source_Home//
-define('API_KEY', $API_KEY);
-$GetINFObot = json_decode(file_get_contents("https://api.telegram.org/bot".API_KEY."/getMe"));
-$Botid = $GetINFObot->result->username;
-function Source_Home($method, $datas = [])
-{
-    $url = "https://api.telegram.org/bot" . API_KEY . "/" . $method;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $datas);
-    $res = curl_exec($ch);
-    if (curl_error($ch)) {
-        var_dump(curl_error($ch));
-    } else {
-        return json_decode($res);
-    }
+define('API_KEY', '1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
+error_reporting(0);
+$admin = array('710732845','710732845');
+$channel = "@hslu78tvhos254";
+$channel2 = "@hslu78tvhos254";
+$channel1 = "hslu78tvhos254";
+$channel22 = "hslu78tvhos254";
+$botids = "KingMovieFileBot";
+//===============KING BOT===============\\
+function bot($method,$datas=[]){
+$url = "https://api.telegram.org/bot".API_KEY."/".$method;
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,$url);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+curl_setopt($ch,CURLOPT_POSTFIELDS,$datas);
+$res = curl_exec($ch);
+if(curl_error($ch)){
+var_dump(curl_error($ch));
+}else{
+return json_decode($res);
 }
-
-//Source_Home//
-
-function SendDocument($chatid,$document,$caption = null){
-	Source_Home('SendDocument',[
-	'chat_id'=>$chatid,
-	'document'=>$document,
-	'caption'=>$caption
-	]);
 }
-function CreateZip($files = array(),$destination) {
-    if(file_exists($destination)){
-		return false;
-	}
-    $valid_files = array();
-    if(is_array($files)){
-        foreach($files as $file){
-            if(file_exists($file)){
-                $valid_files[] = $file;
-            }
-        }
-    }
-    if(count($valid_files)){
-        $zip = new ZipArchive();
-        if($zip->open($destination,$overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true){
-            return false;
-        }
-        foreach($valid_files as $file){
-            $zip->addFile($file,$file);
-        }
-        $zip->close();
-        return file_exists($destination);
-    }else{
-        return false;
-    }
-}
-function ForwardMessage($chatid,$from_chat,$message_id){
-	Source_Home('ForwardMessage',[
-	'chat_id'=>$chatid,
-	'from_chat_id'=>$from_chat,
-	'message_id'=>$message_id
-	]);
-	}
-function sendAction($chat_id, $action){
-    Source_Home('sendChataction',[
-        'chat_id'=>$chat_id,
-        'action'=>$action
-    ]);
-}
-function sendphoto($ChatId, $photo_id,$caption){
-    Source_Home('sendphoto',[
-        'chat_id'=>$ChatId,
-        'photo'=>$photo_id,
-        'caption'=>$caption
-    ]);
-}
-function sendvideo($chat_id,$video_id,$caption){
-    Source_Home('sendvideo',[
-        'chat_id'=>$chat_id,
-        'video'=>$video_id,
-        'caption'=>$caption
-    ]);
-}
-function EditMessageText($chat_id, $message_id, $text, $parse_mode, $disable_web_page_preview, $keyboard){
-Source_Home('editMessagetext', [
-'chat_id' => $chat_id,
-'message_id' => $message_id,
-'text' => $text,
-'parse_mode' => $parse_mode,
-'disable_web_page_preview' => $disable_web_page_preview,
-'reply_markup' => $keyboard
+function SendMessage($chatid,$text,$parsmde,$disable_web_page_preview,$keyboard){
+bot('sendMessage',[
+'chat_id'=>$chatid,
+'text'=>$text,
+'parse_mode'=>$parsmde,
+'disable_web_page_preview'=>$disable_web_page_preview,
+'reply_markup'=>$keyboard
+]);
+} 
+ function sendphoto($chat_id, $photo, $caption){
+bot('sendphoto',[
+'chat_id'=>$chat_id,
+'photo'=>$photo,
+'caption'=>$caption,
 ]);
 }
-function SendMessage($chatid, $text, $parsmde, $disable_web_page_preview, $keyboard){
-Source_Home('sendMessage', [
-'chat_id' => $chatid,
-'text' => $text,
-'parse_mode' => $parsmde,
-'disable_web_page_preview' => $disable_web_page_preview,
-'reply_markup' => $keyboard
+function timer($x){
+$tehran = new DateTimeZone("Asia/Tehran");
+$london = new DateTimeZone("Europe/London");
+$dateDiff = new DateTime("now", $london);
+$timeOffset = $tehran->getOffset($dateDiff);
+$newtime = time() + $timeOffset;
+return Date("$x",$newtime);
+}
+function forwardmessage($chat_id,$from_chat_id,$message_id){
+bot("forwardmessage",[
+'chat_id'=>$chat_id,
+'from_chat_id'=>$from_chat_id,
+'message_id'=>$message_id
 ]);
 }
-
-//Source_Home//
+function savedatas($type,$data,$dir){
+$type = str_replace(array("1","2","3","4","5","6","7","8","9","0"), array('q','w','e','r','t','y','u','i','o','p'), $type);
+$xml = simplexml_load_file("data/$dir.xml");
+$kingnetwork = $xml->$type;
+$as = file_get_contents("data/$dir.xml");
+if($kingnetwork == ""){
+$as = str_replace("</data>", "<$type>$data</$type>
+</data>", $as);
+@file_put_contents("data/$dir.xml","$as");
+}
+if($kingnetwork != null){
+$as = str_replace("<$type>$kingnetwork</$type>", "<$type>$data</$type>", $as);
+@file_put_contents("data/$dir.xml","$as");
+}
+}
+function keybo($xns){
+$sw = '{"keyboard":['.$xns.'],"resize_keyboard":true}';
+return $sw;
+}
+function chatmessageid(){
 $update = json_decode(file_get_contents('php://input'));
-var_dump($update);
-$message = $update->message;
-$from_id = $message->from->id;
+$message = $update->message; 
 $chat_id = $message->chat->id;
 $chatid = $update->callback_query->message->chat->id;
+if($chat_id != ""){
+return $chat_id;
+}if($chatid != ""){
+return $chatid;
+}
+}
+//===============KING BOT===============\\
+$update = json_decode(file_get_contents('php://input'));
+$message = $update->message;
+$chat_id = chatmessageid();
+mkdir("data");
+$xml = simplexml_load_file("data/data.xml");
+$cha_id = str_replace(array("1","2","3","4","5","6","7","8","9","0"), array('q','w','e','r','t','y','u','i','o','p'), $chat_id);
+$kingnetwork = $xml->$cha_id;
 $text = $message->text;
-$textmassage = $message->text;
-mkdir("data/$chat_id");
-$Source_Home = $message->text;
-$first_name‌‌ = $message->from->first_name;
-$last_name = $message->from->last_name;
+$name = $message->from->first_name;
+$lastname = $message->from->last_name;
 $username = $message->from->username;
-$message_id = $update->message->message_id;
-$messageid = $update->callback_query->message->message_id;
-$reply = $update->message->reply_to_message;
-$re_id = $update->message->reply_to_message->forward_from->id;
-$photo = $update->message->photo;
+$from_id = chatmessageid();
 $data = $update->callback_query->data;
-$inline_query = $update->inline_query;
-$query_id = $inline_query->id;
-$forward_from = $update->message->forward_from;
-$forward_from_id = $forward_from->id;
-$forward_from_username = $forward_from->username;
-$fromm_id = $update->inline_query->from->id;
-$fatime = jdate('H:i:s');
-$fadate = jdate("Y/F/d");
-@$Source_Home = file_get_contents("data/$chat_id/Source_Home.txt");
-//Source_Home//
-$left = json_decode(file_get_contents("https://api.telegram.org/bot" . API_KEY . "/getChatMember?chat_id=$channel&user_id=$from_id"))->result->status;
-//Source_Home//
-$command = file_get_contents("data/$from_id/command.txt");
-$ref = file_get_contents("data/$chat_id/ref.txt");
-//Source_Home//
-$members = file_get_contents("data/members.txt");
-$memlist = explode("\n", $members);
-$banlist = file_get_contents("data/banlist.txt");
-$blist = explode("\n", $banlist);
-//Source_Home//
-if ($left == "left") {
-    Source_Home('sendMessage', [
-        'chat_id' => $chat_id,
-        'text' => "
-▫️برای فعال شدن ربات باید در کانال زیر عضو شوید 👇
+//===============KING BOT===============\\
+$check = json_decode(file_get_contents("https://api.telegram.org/bot".API_KEY."/getChatMember?chat_id=$channel2&user_id=$chat_id"),true); 
+$stats2 = $check['result']['status'];
+$as = file_get_contents("data/data.xml");
+if($as == ""){
+$gd = '<?xml version="1.0" encoding="UTF-8"?>
+<data>
+</data>';
+file_put_contents("data/data.xml",$gd);
+}
+$as2 = file_get_contents("kings.php");
+if($as2 == ""){
+$gd = '<?php
+$xc =0;';
+file_put_contents("kings.php",$gd);
+}
+$as3 = file_get_contents("data/mo.xml");
+if($as3 == ""){
+$gd = '<?xml version="1.0" encoding="UTF-8"?>
+<data>
+</data>';
+file_put_contents("data/mo.xml",$gd);
+}
+//===============KING BOT===============\\
+$keyboard = json_encode(['keyboard'=>[
+[['text'=>"🚗دریافت شماره🚗"]],
+[['text'=>"امتیاز گیری🎄"],['text'=>"🎄حساب شما"]],
+[['text'=>"🌅کد هدیه🌅"]],
+[['text'=>"راهنما ربات☢"],['text'=>"☢مقررات ربات"]],
+[['text'=>"پشتیبانی🏓"],['text'=>"🏓استعلام شماره ها"]],
+[['text'=>"⚜️کانال ربات⚜️"]],
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+$menuadmin = json_encode(['keyboard'=>[
+[['text'=>"ارسال همگانی📮"],['text'=>"📮فوروارد همگانی"]],
+[['text'=>"امار🔮"],['text'=>"🔮تنظیم موجودی"]],
+[['text'=>"🎈ساخت کد هدیه🎈"]],
+[['text'=>"تنظیم متن قوانین📚"],['text'=>"📚تنظیم متن راهنما"]],
+[['text'=>"تنظیم ربات پشتیبانی⚙️"],['text'=>"⚙️تنظیم موجودی شماره"]],
+[['text'=>'↩️منوی اصلی↩️']]
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+$back = json_encode(['keyboard'=>[
+[['text'=>'↩️منوی اصلی↩️']],
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+$backadmin = json_encode(['keyboard'=>[
+[['text'=>'↩️منوی ادمین↩️']],
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+$typenumber = json_encode(['keyboard'=>[
+[['text'=>"💎تلگرام"],['text'=>"📺اینستاگرام"]],
+[['text'=>"🔍گوگل"],['text'=>"📳 واتس اپ"]],
+[['text'=>"🐝بیتالک"],['text'=>"💌لاین"]],
+[['text'=>"📞وایبر"],['text'=>"☂️ایمو"]],
+[['text'=>"📱اسکایپ"],['text'=>"🛃فیسبوک"]],
+[['text'=>"✳️وی چت"],['text'=>"📨یاهو"]],
+[['text'=>"🗃مایکروسافت"],['text'=>"🐣تویتر"]],
+[['text'=>"🏮تانگو"],['text'=>"📽یوتیوب"]],
+[['text'=>"💰الکترونیوم"]],
+[['text'=>"↩️منوی اصلی↩️"]],
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+$keshvar = json_encode(['keyboard'=>[
+[['text'=>"روسیه 🇷🇺"]],
+[['text'=>"فیلیپین 🇵🇭"],['text'=>"میانمار 🇲🇲"]],
+[['text'=>"انگلستان 🇬🇧"],['text'=>"ماکائو 🇲🇴"]],
+[['text'=>"هنگ کنگ 🇭🇰"],['text'=>"تایلند 🇹🇭"]],
+[['text'=>"پرو 🇵🇪"],['text'=>"فرانسه 🇫🇷"]],
+[['text'=>"عربستان 🇸🇦"],['text'=>"نیجریه 🇳🇬"]],
+[['text'=>"اسپانیا 🇪🇸"],['text'=>"آمریکا 🇺🇸"]],
+[['text'=>"جامائیکا 🇯🇲"],['text'=>"ایرلند 🇮🇪"]],
+[['text'=>"اسرائیل 🇮🇱"],['text'=>"ایتالیا 🇮🇹"]],
+[['text'=>"افغانستان 🇦🇫"],['text'=>"آرژانتین 🇦🇷"]],
+[['text'=>"آذربایجان 🇦🇿"],['text'=>"الجزایر 🇩🇿"]],
+[['text'=>"برزیل 🇧🇷"],['text'=>"آلمان 🇩🇪"]],
+[['text'=>"هند 🇮🇳"],['text'=>"ژاپن 🇯🇵"]],
+[['text'=>"آفریقای جنوبی 🇿🇦"]],
+[['text'=>"پرتغال 🇵🇹"],['text'=>"سوئد 🇸🇪"]],
+[['text'=>"استونی 🇪🇪"],['text'=>"کانادا 🇨🇦"]],
+[['text'=>"چین 🇨🇳"],['text'=>"ترکیه 🇹🇷"]],
+[['text'=>"سوئیس 🇨🇭"]],
+[['text'=>"↩️منوی اصلی↩️"]],
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+$setinfonumber = json_encode(['keyboard'=>[
+[['text'=>"🇷🇺روسیه🇷🇺"]],
+[['text'=>"🇵🇭فیلیپین🇵🇭"],['text'=>"🇲🇲میانمار🇲🇲"]],
+[['text'=>"🇬🇧انگلستان🇬🇧"],['text'=>"🇲🇴ماکائو🇲🇴"]],
+[['text'=>"🇭🇰هنگ کنگ🇭🇰"],['text'=>"🇹🇭تایلند🇹🇭"]],
+[['text'=>"🇵🇪پرو🇵🇪"],['text'=>"🇫🇷فرانسه🇫🇷"]],
+[['text'=>"🇸🇦عربستان🇸🇦"],['text'=>"🇳🇬نیجریه🇳🇬"]],
+[['text'=>"🇪🇸اسپانیا🇪🇸"],['text'=>"🇺🇸آمریکا🇺🇸"]],
+[['text'=>"🇯🇲جامائیکا🇯🇲"],['text'=>"🇮🇪ایرلند🇮🇪"]],
+[['text'=>"🇮🇱اسرائیل🇮🇱"],['text'=>"🇮🇹ایتالیا🇮🇹"]],
+[['text'=>"🇦🇫افغانستان🇦🇫"],['text'=>"🇦🇷آرژانتین🇦🇷"]],
+[['text'=>"🇦🇿آذربایجان🇦🇿"],['text'=>"🇩🇿الجزایر🇩🇿"]],
+[['text'=>"🇧🇷برزیل🇧🇷"],['text'=>"🇩🇪آلمان🇩🇪"]],
+[['text'=>"🇮🇳هند🇮🇳"],['text'=>"🇯🇵ژاپن🇯🇵"]],
+[['text'=>"🇿🇦آفریقا جنوبی🇿🇦"]],
+[['text'=>"🇵🇹پرتغال🇵🇹"],['text'=>"🇸🇪سوئد🇸🇪"]],
+[['text'=>"🇪🇪استونی🇪🇪"],['text'=>"🇨🇦کانادا🇨🇦"]],
+[['text'=>"🇨🇳چین🇨🇳"],['text'=>"🇹🇷ترکیه🇹🇷"]],
+[['text'=>"🇨🇭سوئیس🇨🇭"]],
+[['text'=>"↩️منوی ادمین↩️"]],
+],'resize_keyboard'=>true]);
+//===============KING BOT===============\\
+include 'kings.php';
+$cont = $update->message->contact;
+$phone_number = $cont->phone_number;
+$chekid = $cont->first_name;
+$xbw = "ok".$cha_id;
+$vjs = $xml->$xbw;
+if($vjs == "" && $phone_number == ""){
+sendmessage($chat_id,"خطا !! شما اکانت خود را تایید نکردید جهت تایید از دکمه تایید حساب استفاده نمایید",'true',keybo('
+[{"text":"💠تایید هویت💠","request_contact":true}]
+')
+);
+return false;
+}
+elseif($phone_number != ""){
+if($chekid == $name){
+$phone_number = str_replace("+", "", $phone_number);
+$s = preg_split('//u', $phone_number, null, PREG_SPLIT_NO_EMPTY);
+$v = $s['0'].$s['1'];
+if($v == "98"){
+savedatas($xbw,"ok","data");
+sendmessage($chat_id,"
+حساب کاربریتان با موفقیت تایید شد✅
+دستور /start ارسال کنید📍");
+}else{
+sendmessage($chat_id,"✅سیستم ضدتقلب فعال شد
+📍این شماره متعلق به ایران نیست
+📍فقط کاربران با شماره ایران حق استفاده از ربات را دارند
+🆔 $channel
+🌐 $channel2");
+}
+}else{
+sendmessage($chat_id,"📍اطلاعات ارسال شده با اطلاعات اصلی اکانت مطابقت ندارد
+🆔 $channel
+🌐 $channel2");
+return false;
+}
+}
+//===============KING BOT===============\\
+if($text == "🎄حساب شما"){
+$xmls = simplexml_load_file("data/mo.xml");
+$mo = $xmls->$cha_id;
+sendmessage($chat_id," 
+➖➖➖➖➖➖➖➖
+💰 موجودی شما : $mo سکه
+➖➖➖➖➖➖➖➖");
+}
+//===============KING BOT===============\\
+if($stats2 != 'creator' && $stats2 != 'administrator' && $stats2 != 'member'){
+SendMessage($chat_id, "
+📛ربات در حالت عادی قفل است📛
+🚫ابتدا وارد کانال اسپانسر های ما شوید🚫
+✅سپس دستور /start را ارسال کنید✅
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+-$channel1
+-$channel2
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● @$botids ●");
+return false;
+}
+//===============KING BOT===============\\
+if($text == '/start'){
+$user = file_get_contents('users.txt');
+$members = explode("\n",$user);
+if (!in_array($chat_id,$members)){
+$add_user = file_get_contents('users.txt');
+$add_user .= $chat_id."\n";
+file_put_contents('users.txt',$add_user);
+savedatas($from_id,"0","mo");
+}
+sendmessage($chat_id,"کاربر گرامی به ربات دریافت شماره مجازی خیلی خوش آمدید❤️
 
-🔹 $channel 
+✅ به راحتی شماره مجازی بگیرید
 
-🔹 $channel
+✅ با سرعت بالا و کاملا اتوماتیک
 
-⚠️ درصورت عضو نشدن ربات فعال نمی شود ...
-✅ پس از عضویت در کانال دستور /start را دوباره تکرار کنید ..
-",
-        'parse_mode' => 'HTML',
-        'reply_markup' => json_encode([
-            'inline_keyboard' => [
-                [['text' => "🔻ورود به کانال🔻", 'url' => "http://telegram.me/" . str_replace("@", '', $channel)]]]])
-    ]);
-} else {
-
-    if (strpos($text, '/start') !== false or $text == "▫️بازگشت به منوی اصلی▫️") {
-
-        if (!in_array($chat_id, $memlist)) {
-            if (!file_exists("data")) {
-                mkdir("data");
-            }
-            mkdir("data/$from_id");
-            $members .= $chat_id . "\n";
-            file_put_contents("data/members.txt", "$members");
-            file_put_contents("data/$chat_id/ref.txt", "0");
-
-            $id = str_replace("/start ", "", $text);
-            if ($id != "" && $text != "/start" && $id != $from_id) {
-                SendMessage($id, "🏷 کاربر <a href='tg://user?id=$from_id'>$first_name‌</a> با لینک شما وارد ربات شد!
-
-🔻1 نفر به زیر مجموعه های شما اضافه گردید ☑️
-", "HTML");
-                file_put_contents("data/$from_id/refe.txt", "$id");
-                $refs = file_get_contents("data/$id/ref.txt");
-                $refs = $refs + 1;
-                file_put_contents("data/$id/ref.txt", "$refs");
-                
-            }
-        }
-
-        file_put_contents("data/$chat_id/command.txt", "none");
-
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-🔻سلام به ربات هک اینستا ما خوش آمدید ..
-
-▫️شما میتوانید با استفاده از ربات ما برای خودتان پیچ اینستا داشته باشید چه به صورت هک شده چه به صورت عادی میتوانید دریافت نمایید ..
-
-⚜ هر سوال و یا مشکلی داشتید میتوانید از طریق قسمت  | 🗣 پشتیبانی | با ما در ارتباط باشید.
-🌐 کانال ما : $channel
-
-📅 تاریخ: $fadate
-⏰ ساعت: $fatime
-",
-            'parse_mode' => 'HTML',
-            'reply_markup' => json_encode([
-                'keyboard' => [
-                    [['text' => "هک اینستاگرام با شماره"], ['text' => "هک اینستاگرام با آیدی"]],
-                    [['text' => "هک اینستاگرام با ایمیل"]],
-                    [['text' => "🌐 اطلاعات حساب"]],
-                    [['text' => "🗣 پشتیبانی"], ['text' => "👥 زیرمجموعه گیری"]],
-                    [['text' => "🎖خرید خدمات اینستاگرامی🎖"]],
-
-                ],
-                'resize_keyboard' => true,
-            ])
-        ]);
-    }
-  //Source_Home//
-  elseif ($text == 'هک اینستاگرام با شماره') {
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-🔹کاربر گرامی $first_name‌
-
-⚠️ به دلیل هزینه‌ های سنگین سرور و پیاده سازی دشوار سرویس پردازش این ربات ، فقط افرادی که اکانت ویژه دارند امکان استفاده از این ربات وجود دارد ..
-
-💎 برای فعال کردن اکانت ویژه ، باید 10 نفر را با استفاده از لینک دعوت اختصاصی خودت به ربات دعوت کنی تا تمام امکانات ربات برای شما فعال گردد ..
-
-👤 شما تا کنون $ref نفر را دعوت کرده اید ..
-
-📣 برای دریافت لینک اختصاصی رو دکمه زیر مجموعه گیری کلید کنید👇
-",
-        
-            ]);
-        }
-        
-    //Source_Home//
-    elseif ($text == 'هک اینستاگرام با آیدی') {
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-🔹کاربر گرامی $first_name‌
-
-⚠️ به دلیل هزینه‌ های سنگین سرور و پیاده سازی دشوار سرویس پردازش این ربات ، فقط افرادی که اکانت ویژه دارند امکان استفاده از این ربات وجود دارد ..
-
-💎 برای فعال کردن اکانت ویژه ، باید 10 نفر را با استفاده از لینک دعوت اختصاصی خودت به ربات دعوت کنی تا تمام امکانات ربات برای شما فعال گردد ..
-
-👤 شما تا کنون $ref نفر را دعوت کرده اید ..
-
-📣 برای دریافت لینک اختصاصی رو دکمه زیر مجموعه گیری کلید کنید👇
-",
-     
-            ]);
-        }
-        
-    //Source_Home//
-    elseif ($text == 'هک اینستاگرام با ایمیل') {
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-🔹کاربر گرامی $first_name‌
-
-⚠️ به دلیل هزینه‌ های سنگین سرور و پیاده سازی دشوار سرویس پردازش این ربات ، فقط افرادی که اکانت ویژه دارند امکان استفاده از این ربات وجود دارد ..
-
-💎 برای فعال کردن اکانت ویژه ، باید 10 نفر را با استفاده از لینک دعوت اختصاصی خودت به ربات دعوت کنی تا تمام امکانات ربات برای شما فعال گردد ..
-
-👤 شما تا کنون $ref نفر را دعوت کرده اید ..
-
-📣 برای دریافت لینک اختصاصی رو دکمه زیر مجموعه گیری کلید کنید👇
-",
- 
-            ]);
-        }
-        
-    
- //Source_Home//
-    elseif ($text == "👥 زیرمجموعه گیری") {
-    	Source_Home('sendPhoto', [
-            'chat_id' => $chat_id,
-             'photo'=>"https://uupload.ir/files/ksmm_picsart_03-01-10.27.45.jpg",
-        'caption'=>"
-📣 یه ربات براتون اوردم که آیدی اینستاگرام میدی بعد رمز پیچ رو میده😍
-
-🔖 بیا توش همه دوستات رو هک کن و اذیتشون کن😼💪
-
-📌 همین الان رو لینک زیر کلیک کن و بریم واسه هک اینستا🤨👇
-
-https://t.me/$Botid?start=$from_id",
-]);
-Source_Home('sendvideo', [
-            'chat_id' => $chat_id,
-            'message_id' => $message_id2,
-             'video'=>"https://uupload.ir/filelink/wpQWSbBw6A5Z/kuij_animation.gif.mp4",
-        'caption'=>"
-⁉️ دوست داری اینستاگرام کسی رو هک کنی؟! 😼
-
-‼️ میتونی با هک کردن پیچ بقیه اونا رو بفروشی و پول پارو کنی😍
-
-✅ خب من یه ربات بهت معرفی میکنم که باهاش میتونی پیچ ها رو هک کنی ، کار با ربات اینطوریه که آیدی اینستا قربانی رو میدی بعد رمز رو دریافت میکنی😁💪
-
-📌 همین الان رو لینک زیر کلیک کن و بریم واسه هک اینستا🤨👇
-
-https://t.me/$Botid?start=$from_id",
-]);
-        sleep(1);
- Source_Home('sendmessage', [
-            'chat_id' => $chat_id,
-            'message_id'=>$message_id + 1,
-            'text' => "
-▫️با انتشار یکی از پست های بالا با جمع کردن حداقل 10 نفر به عنوان زیر مجموعه ، میتوانید از تمامی قسمت های ربات به صورت ویژه استفاده کنید ..
-",
-'reply_to_message_id'=>$message_id,
-       'reply_markup' => json_encode([
-                'keyboard' => [
-[['text' => "▫️بازگشت به منوی اصلی▫️"]],
+✅ با کمترین امتیاز ممکن 
+🆔 $channel
+🌐 $channel2",'true',$keyboard);
+}
+//===============KING BOT===============\\
+if($text == "↩️منوی اصلی↩️"){
+sendmessage($chat_id,"به منوی اصلی برگشتید یک گزینه را انتخاب کنید🔘",'true',$keyboard);
+}
+//===============KING BOT===============\\
+if($text == "امتیاز گیری🎄"){
+sendmessage($chat_id,"
+اولین ربات شماره مجازی رایگان
+با زیرمجموعه گیری شماره مجازی رایگان دریافت کنید
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+-هوشمند
+-سیستم ضدتقلب🗣
+-دارای شماره بیش از 30 کشور⚙️
+-پشتیبانی از انواع پیامرسان ها📫
+-بدون بلاک و ریپورت شدن شماره☎️
+-کاملا رایگان🌐
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+[دریافت شماره مجازی رایگان](https://telegram.me/$botids?start=$chat_id)
+",'true',$back);
+}
+//===============KING BOT===============\\
+$help = $xml->help;
+$textgetmo = $xml->textgetmo;
+$userbot = $xml->userbot;
+$russia = $xml->russia;
+$phli = $xml->phli;
+$mianmar = $xml->mianmar;
+$uk = $xml->uk;
+$hongkong = $xml->hongkong;
+$thilan = $xml->thilan;
+$pronum = $xml->pronum;
+$france = $xml->france;
+$irlan = $xml->irlan;
+$israee = $xml->israee;
+$arabic = $xml->arabic;
+$niger = $xml->niger;
+$spain = $xml->spain;
+$usa = $xml->usa;
+$jama = $xml->jama;
+$italy = $xml->italy;
+$afghan = $xml->afghan;
+$porte = $xml->porte;
+$esto = $xml->esto;
+$cana = $xml->cana;
+$chain = $xml->chain;
+$turk = $xml->turk;
+$jama = $xml->$jama;
+$soee = $xml->soee;
+$argan = $xml->argan;
+$azar = $xml->azar;
+$algazir = $xml->algazir;
+$brazil = $xml->brazil;
+$german = $xml->german;
+$india = $xml->india;
+$japan = $xml->japan;
+$africa = $xml->africa;
+$soed = $xml->soed;
+//===============KING BOT===============\\
+if($text == "☢مقررات ربات"){
+sendmessage($chat_id,"☢مقررات ربات☢ : \n $textgetmo");
+}
+//===============KING BOT===============\\
+if($text == "راهنما ربات☢"){
+sendmessage($chat_id,"⛄راهنما ربات⛄ : \n $help");
+}
+//===============KING BOT===============\\
+if($text == "پشتیبانی🏓"){
+$supportb = json_encode([ 'inline_keyboard'=>[ 
+[['text'=>"🔅ورود به ربات پشتیبانی🔅",'url'=>"https://t.me/$userbot"]]
 ]
-])
-]); 
+]);
+sendmessage($chat_id,"
+🔻برای ارتباط با پشتیبانی🔻
+🔻روی دکمه زیر کلیک کنید🔻
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● $channel ●
+● $channel2 ●",'true', $supportb);
 }
- //Source_Home//
-    elseif ($text == '🌐 اطلاعات حساب') {
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-─────┅┅══┅┅─────
 
-👤 نام : $first_name‌‌
-🎟 آیدی : $chat_id
-👥 زیر مجموعه ها : $ref نفر
-
-📅 تاریخ: $fadate
-⏰ ساعت: $fatime
-
-─────┅┅══┅┅─────
-",
-            'parse_mode' => 'HTML',
-        ]);
-    }
-    //Source_Home//
-    elseif ($text == '🗣 پشتیبانی') {
-        file_put_contents("data/$chat_id/command.txt", "support");
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "📩 پیام خود را ارسال کنید :",
-            'parse_mode' => 'HTML',
-            'reply_markup' => json_encode([
-                'keyboard' => [
-                    [['text' => "▫️بازگشت به منوی اصلی▫️"]],
-                ], 'resize_keyboard' => true,
-            ])
-        ]);
-    } elseif ($command == 'support') {
-        if (!in_array($chat_id, $blist)) {
-            bot("forwardMessage", ['chat_id' => $admin, 'from_chat_id' => $chat_id, 'message_id' => $message_id]);
-            sendmessage($chat_id, "✅ پیام شما ارسال شد.", "HTML");
-        } else {
-            file_put_contents("data/$chat_id/command.txt", "none");
-            sendmessage($chat_id, "⛔️ شما بدلیل تخلف مسدود شده اید", "HTML");
-        }
-    } elseif ($chat_id == $admin and $reply) {
-        if ($text == "/ban") {
-            if (!in_array($re_id, $blist)) {
-                file_put_contents("data/banlist.txt", "\n" . $re_id, FILE_APPEND);
-                sendmessage($chat_id, "❌ کاربر مسدود شد .", "HTML");
-            }
-        } elseif ($text == "/unban") {
-            if (in_array($re_id, $blist)) {
-                $bli = str_replace("\n" . $re_id, '', $banlist);
-                file_put_contents("data/banlist.txt", $bli);
-                sendmessage($chat_id, "✅ کاربر آزاد شد .", "HTML");
-            }
-        } else {
-            sendmessage($re_id, $text, "HTML");
-            sendmessage($chat_id, "✅ پیام شما ارسال شد.", "HTML");
-        }
-    }
- //Source_Home//
- if(preg_match('/^\/([Cc][Rr][Ee][Aa][Tt][Oo][Rr])/',$Source_Home)){
- bot ('sendMessage',[
- 'chat_id'=>$chat_id,
- 'text'=> '🔖 این ربات توسط @Source_Home ساخته شده است✅',
-  ]);
- }
-  //Source_Home//
-elseif ($text == '🎖خرید خدمات اینستاگرامی🎖') {
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-🌼 جشنواره تابستانهِ خدمات مجازی اینستاگرام 🔥
-
-🛍 جشنواره تابستانه امسال رو با کاهش قیمت ، همراه با کلی از تخفیف و هدیه های ویژه بهره مند شو😍💪🎁👇
-
-─────┅┅══┅┅─────
-🌿 فالوور فیک اینستاگرام | 30% تخفیف 🛒 + هدیه ویژه 💎
-
-👤 هر 1000 فالور + 300 فالور هدیه 🎁 + 500 لایک هدیه 🎁 + 500 ویو ویدیو هدیه 🎁 | 10 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 فالوور اینستاگرام نیمه فیک بدون آنفالو | 30% تخفیف 🛒 + هدیه ویژه 💎
-
-👤 هر 1000 فالور + 300 فالور هدیه 🎁 + 500 لایک هدیه 🎁 + 500 ویو ویدیو هدیه 🎁 | 18 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 فالوور اینستاگرام نیمه فیک ایرانی | 30% تخفیف 🛒 + هدیه ویژه 💎
-
-👤 هر 1000 فالور + 300 فالور هدیه 🎁 + 500 لایک هدیه 🎁 + 500 ویو ویدیو هدیه 🎁 | 14 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 فالوور اینستاگرام فعال ایرانی | 30% تخفیف 🛒 + هدیه ویژه 💎
-
-👤 هر 1000 فالور + 300 فالور هدیه 🎁 + 500 لایک هدیه 🎁 + 500 ویو ویدیو هدیه 🎁 | 15 تومن💰
-🏷 کیفیت ⭐️⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 لایک ایرانی پست اینستاگرام | 30% تخفیف 🛒 + هدیه داغ 🔥
-
-▫️هر 1000 لایک + 500 لایک هدیه 🎁 | 5 تومن💰
-🏷 کیفیت ⭐️⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 لایک خارجی پست اینستاگرام | 20% تخفیف 🛒 + هدیه داغ 🔥
-
-▫️هر 1000 لایک + 500 لایک هدیه 🎁 | 3 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 لایک لایو استوری اینستاگرام | 20% تخفیف 🛒 + هدیه داغ 🔥
-
-▫️هر 1000 لایک + 200 لایک هدیه 🎁 | 16 تومن💰
-🏷 کیفیت ⭐️⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 ویو واقعی لایو استوری اینستاگرام | 20% تخفیف 🛒 + هدیه داغ 🔥
-
-👁‍🗨 هر 1000 ویو + 500 ویو هدیه 🎁 | 90 تومن💰
-🏷 کیفیت ⭐️⭐️⭐️⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 ویو واقعی ویدئو اینستاگرام | 20% تخفیف 🛒 + هدیه داغ 🔥
-
-👁‍🗨 هر 1000 ویو + 500 ویو هدیه 🎁 | 12 تومن💰
-🏷 کیفیت ⭐️⭐️⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 ویو فیک ویدئو اینستاگرام | 45% تخفیف 🛒 + هدیه داغ 🔥
-
-👁‍🗨 هر 1000 ویو + 500 ویو هدیه 🎁 | 4 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 ویو واقعی استوری اینستاگرام | 20% تخفیف 🛒 + هدیه داغ 🔥
-
-👁‍🗨 هر 1000 ویو + 500 ویو هدیه 🎁 | 19 تومن💰
-🏷 کیفیت ⭐️⭐️⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 ویو فیک استوری اینستاگرام | 45% تخفیف 🛒 + هدیه داغ 🔥
-
-👁‍🗨 هر 1000 ویو + 500 ویو هدیه 🎁 | 4500 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-🌿 کامنت فیک فارسی پست اینستاگرام | 20% تخفیف 🛒 + هدیه داغ 🔥
-
-👁‍🗨 هر 100 کامنت + 10 کامنت هدیه 🎁 | 3 تومن💰
-🏷 کیفیت ⭐️⭐️
-📊 ماندگاری⭐️⭐️⭐️⭐️
-─────┅┅══┅┅─────
-⚠️ قابل توجه شما دوستان عزیز هدیه های هر بخش بر اساس هزارتا میباشند در صورت خریداری بیش از هزارتا ، هدیه ها به ازای هر هزارتایی که خریداری میکنید برای شما دوست عزیز افزایش میابد ✔️
-─────┅┅══┅┅─────
-🖥 تحویل آنی تمام سفارشات پس از پرداخت ✅
-
-💰پرداخت ها به صورت زیر انجام میگیرد👇
-
-🎈 کارت به کارت 💳
-🎈 پرداخت از طریق درگاه 💵
-
-🔻جهت خرید و یا مشاوره با آیدی زیر در ارتباط باشید👇
-
-🆔 @Source_Home
-
-🔻در صورت ریپورت بودن به ربات های زیر پیغام دهید👇
-
-🆔 @Source_Home
-🆔 @Source_Home
-
-❎ مدارک خرید و فروش در کانال زیر قرار میگیرد👇
-
-🆔 @Source_Home
-
-🌐 کانال خبر و حواشی های تغییر قیمت و نحوه چگونگی انجام سفارشات در کانال زیر قرار داده میشود👇
-
-🆔 @Source_Home
-
-🎗 مدیریت کینگ سیمپله | @Source_Home
-",
-        ]);
-    }
-//Source_Home//
-if ($text == '/panel' and $chat_id == $admin) {
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-🔻به پنل مدیریت خوش آمدید
-",
-            'parse_mode' => 'HTML',
-            'reply_markup' => json_encode([
-                'keyboard' => [
-                    [['text' => "📊 آمار و اطلاعات"]],
-                    [['text' => "پیام همگانی"], ['text' => "فروارد همگانی"]],
-                    [['text' => "🗂 پشتیبان گیری"]],
-                    [['text' => "انبلاک کردن▫️"], ['text' => "▫️بلاک کردن"]],
-                    [['text' => "▫️بازگشت به منوی اصلی▫️"]],
-                ],
-                'resize_keyboard' => true,
-            ])
-        ]);
-    }
-
-    //Source_Home//
-     if ($text == '🗂 پشتیبان گیری' and $chat_id == $admin) {
-    SendMessage($chat_id,"■ نسخه پشتیبان درحال آماده سازی است.\n■ منتظر بمانید ...", 'MarkDown', $message_id);
-copy('data/members.txt','members.txt');
- $file_to_zip = array('members.txt');
- $create = CreateZip($file_to_zip, "@Source_Home.zip");
- $zipfile = new CURLFile("@Source_Home.zip");
- SendDocument($chat_id, $zipfile, "This Backup Of user\n📅 تاریخ: $fadate\n⏰ ساعت: $fatime");
- unlink('members.txt');
- unlink('@Source_Home.zip');
- unlink('updates.txt');
-
-  
+//===============KING BOT===============\\
+if($text == "🏓استعلام شماره ها"){
+$numberinfo = json_encode([ 'inline_keyboard'=>[ 
+[['text'=>"🇷🇺تعداد شماره روسیه🇷🇺= $russia",'callback_data'=>"0000010"]],
+[['text'=>"🇵🇭تعداد شماره فیلیپین🇵🇭= $phli",'callback_data'=>"0100000"]],
+[['text'=>"🇲🇲تعداد شماره میانمار🇲🇲= $mianmar",'callback_data'=>"0010000"]],
+[['text'=>"🇬🇧تعداد شماره انگلستان🇬🇧= $uk",'callback_data'=>"1000000"]],
+[['text'=>"🇭🇰تعداد شماره هنگ کنگ🇭🇰= $hongkong",'callback_data'=>"0000100"]],
+[['text'=>"🇹🇭تعداد شماره تایلند🇹🇭= $thilan",'callback_data'=>"0200000"]],
+[['text'=>"🇵🇪تعداد شماره پرو🇵🇪= $pronum",'callback_data'=>"0400000"]],
+[['text'=>"🇫🇷تعداد شماره فرانسه🇫🇷= $users",'callback_data'=>"0300000"]],
+[['text'=>"🇮🇪تعداد شماره ایرلند🇮🇪= $france",'callback_data'=>"0020000"]],
+[['text'=>"🇮🇱تعداد شماره اسرائیل🇮🇱= $israee",'callback_data'=>"0003000"]],
+[['text'=>"🇸🇦تعداد شماره عربستان🇸🇦= $arabic",'callback_data'=>"0000400"]],
+[['text'=>"🇳🇬تعداد شماره نیجریه🇳🇬= $niger",'callback_data'=>"0000002"]],
+[['text'=>"🇪🇸تعداد شماره اسپانیا🇪🇸= $spain",'callback_data'=>"0000010"]],
+[['text'=>"🇺🇸تعداد شماره آمریکا🇺🇸= $usa",'callback_data'=>"0100000"]],
+[['text'=>"🇯🇲تعداد شماره جامائیکا🇯🇲= $jama",'callback_data'=>"0010000"]],
+[['text'=>"🇮🇹تعداد شماره ایتالیا🇮🇹= $italy",'callback_data'=>"1000000"]],
+[['text'=>"🇦🇫تعداد شماره افغانستان🇦🇫= $afghan",'callback_data'=>"0000100"]],
+[['text'=>"🇵🇹تعداد شماره پرتغال🇵🇹= $porte",'callback_data'=>"0003000"]],
+[['text'=>"🇪🇪تعداد شماره استونی🇪🇪= $esto",'callback_data'=>"0000400"]],
+[['text'=>"🇨🇦تعداد شماره کانادا🇨🇦= $cana",'callback_data'=>"0000002"]],
+[['text'=>"🇨🇳تعداد شماره چین🇨🇳= $chain",'callback_data'=>"0000010"]],
+[['text'=>"🇹🇷تعداد شماره ترکیه🇹🇷= $turk",'callback_data'=>"0100000"]],
+[['text'=>"🇨🇭تعداد شماره سوئیس🇨🇭= $soee",'callback_data'=>"1000000"]],
+[['text'=>"🇦🇷تعداد شماره آرژانتین🇦🇷= $argan",'callback_data'=>"0003000"]],
+[['text'=>"🇦🇿تعداد شماره آذربایجان🇦🇿= $azar",'callback_data'=>"0000400"]],
+[['text'=>"🇩🇿تعداد شماره الجزایر🇩🇿= $algazir",'callback_data'=>"0000002"]],
+[['text'=>"🇧🇷تعداد شماره برزیل🇧🇷= $brazil",'callback_data'=>"0000010"]],
+[['text'=>"🇩🇪تعداد شماره آلمان🇩🇪= $german",'callback_data'=>"0100000"]],
+[['text'=>"🇮🇳تعداد شماره هند🇮🇳= $india",'callback_data'=>"0010000"]],
+[['text'=>"🇯🇵تعداد شماره ژاپن🇯🇵= $japan",'callback_data'=>"1000000"]],
+[['text'=>"🇸🇪تعداد شماره سوئد🇸🇪= $soed",'callback_data'=>"10070000"]],
+[['text'=>"🇿🇦تعداد شماره آفریقای جنوبی🇿🇦= $africa",'callback_data'=>"0000100"]]
+]
+]);
+sendmessage($chat_id,"
+🔻موجودی شماره های ربات🔻
+🔻کاملا هوشمند🔻
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● $channel ●
+● $channel2 ●",'true', $numberinfo);
 }
-    //Source_Home//
-    elseif ($text == "▫️بلاک کردن" and $chat_id == $admin) {
-                 file_put_contents("data/$from_id/command.txt","idblock");
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-❎ خوب حالا آیدی عددی کاربر مورد نظر رو بفرست تا از ربات بلاکش کنم
-",
-        ]);
-    } elseif ($command == 'idblock') {
-        $myfile2 = fopen("data/banlist.txt", 'a') or die("Unable to open file!");
-        fwrite($myfile2, "$text\n");
-        fclose($myfile2);
-        file_put_contents("data/$from_id/command.txt","");
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-❎ با موفقیت انجام شد ..
-",
-            'parse_mode' => "html",
-        ]);
-    }
-     elseif ($text == "انبلاک کردن▫️"and $chat_id == $admin) {
-        file_put_contents("data/$from_id/command.txt","idunblock");
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-❎ خوب حالا آیدی عددی کاربر مورد نظر رو بفرست تا از ربات آنبلاکش کنم
-",
-        ]);
-    } elseif ($command == 'idunblock') {
-        $newlist = str_replace($text, "", $blist);
-        file_put_contents("data/banlist.txt", $newlist);
-        file_put_contents("data/$from_id/command.txt","");
-        Source_Home('sendMessage', [
-            'chat_id' => $chat_id,
-            'text' => "
-❎ با موفقیت انجام شد ..
-",
-        ]);
-    } 
-    //Source_Home//
-    if ($text == 'پیام همگانی' and $chat_id == $admin) {
-    Source_Home('sendMessage',[
-        'chat_id'=>$chat_id,
-        'text'=>"آیا میخواهید پیام همگانی ارسال کنید؟",
-        'reply_to_message_id'=>$message_id,
-        'disable_web_page_preview'=>true,
-        'parse_mode'=>"MarkDown",
-        'reply_markup'=>json_encode([
-           'keyboard'=>[
- [['text'=>"بله"],['text'=>"▫️بازگشت به منوی اصلی▫️"]]
- ],
-  "resize_keyboard"=>true,
-    ])
-    ]);
-    } if ($text == 'بله' and $chat_id == $admin) {
-    file_put_contents("data/$from_id/command.txt","pmall");
-    Source_Home('sendMessage',[
-        'chat_id'=>$chat_id,
-        'text'=>"لطفا پیام خود را ارسال کنید تا به همه اعضا ارسال کنم",
-        'reply_to_message_id'=>$message_id,
-        'disable_web_page_preview'=>true,
-        'parse_mode'=>"MarkDown",
-        'reply_markup'=>json_encode([
-           'keyboard'=>[
- [['text'=>"▫️بازگشت به منوی اصلی▫️"]]
- ],
-  "resize_keyboard"=>true,
-    ])
-    ]);
-    } elseif($command == "pmall" and $textmessage != "▫️بازگشت به منوی اصلی▫️"){
-    Source_Home('sendMessage',[
-        'chat_id'=>$chat_id,
-        'text'=>"پیام همگانی ارسال شد",
-        'reply_to_message_id'=>$message_id,
-        'disable_web_page_preview'=>true,
-        'parse_mode'=>"MarkDown",
-        'reply_markup'=>json_encode([
-           'keyboard'=>[
-                    [['text' => "📊 آمار و اطلاعات"]],
-                    [['text' => "پیام همگانی"], ['text' => "فروارد همگانی"]],
-                    [['text' => "🗂 پشتیبان گیری"]],
-                    [['text' => "انبلاک کردن▫️"], ['text' => "▫️بلاک کردن"]],
-                    [['text' => "▫️بازگشت به منوی اصلی▫️"]],
- ],
-  "resize_keyboard"=>true,
-    ])
-    ]);
-    file_put_contents("data/$from_id/command.txt","");
-	$all_member = fopen( "data/members.txt", 'r');
-		while( !feof( $all_member)) {
- 			$user = fgets( $all_member);
-			if($textmessage != null){
-			SendMessage($user,$textmessage,"html");
-			}
-		}
-    }
-    if ($text == 'فروارد همگانی' and $chat_id == $admin) {
-        Source_Home('sendMessage',[
-        'chat_id' => $chat_id,
-        'text' => "آیا میخواهید فروراد همگانی کنید؟",
-        'reply_to_message_id'=>$message_id,
-        'parse_mode' => "MarkDown",
-        'disable_web_page_preview'=>true,
-            'reply_markup' => json_encode([
-                'keyboard' => [
-                     [['text'=>"آره مطمعنم"],['text'=>"▫️بازگشت به منوی اصلی▫️"]]
-                     ],
-        "resize_keyboard"=>true,
-    ])
-    ]);
-    } 
-    if ($text == 'آره مطمعنم' and $chat_id == $admin) {
-    file_put_contents("data/$from_id/command.txt","fwdall");
-        Source_Home('sendMessage',[
-        'chat_id' => $chat_id,
-        'text'=>"لطفا پیام خود را ارسال کنید تا به همه اعضا فروارد کنم",
-        'reply_to_message_id'=>$message_id,
-        'disable_web_page_preview'=>true,
-        'parse_mode'=>"MarkDown",
-        'reply_markup'=>json_encode([
-           'keyboard'=>[
- [['text'=>"▫️بازگشت به منوی اصلی▫️"]]
- ],
-  "resize_keyboard"=>true,
-    ])
-    ]);
-    } elseif($command == "fwdall" and $textmessage != "▫️بازگشت به منوی اصلی▫️"){
-    Source_Home('sendMessage',[
-        'chat_id'=>$chat_id,
-        'text'=>"پیام شما به همه اعضا فروراد شد",
-        'reply_to_message_id'=>$message_id,
-        'disable_web_page_preview'=>true,
-        'parse_mode'=>"MarkDown",
-        'reply_markup'=> json_encode([
-           'keyboard'=>[
-                    [['text' => "📊 آمار و اطلاعات"]],
-                    [['text' => "پیام همگانی"], ['text' => "فروارد همگانی"]],
-                    [['text' => "🗂 پشتیبان گیری"]],
-                    [['text' => "انبلاک کردن▫️"], ['text' => "▫️بلاک کردن"]],
-                    [['text' => "▫️بازگشت به منوی اصلی▫️"]],
- ],
-  "resize_keyboard"=>true,
-    ])
-    ]);
-    file_put_contents("data/$from_id/command.txt","");
-    $all_memberr = fopen( "data/members.txt", 'r');
-		while( !feof( $all_memberr)) {
- 			$userr = fgets( $all_memberr);
-ForwardMessage($userr,$admin,$message_id);
-		}
-    }
-//Source_Home//
-if ($text == '📊 آمار و اطلاعات' and $chat_id == $admin) {
-    sendMessage($chat_id, "📍 تعداد کل کاربران : " . count($memlist) . "\n📌 آخرین وضعیت ربات شما\n📅 تاریخ: $fadate\n⏰ ساعت: $fatime", "HTML");
+//===============KING BOT===============\\
+if($text == "⚜️کانال ربات⚜️"){
+$listchannel = json_encode([ 'inline_keyboard'=>[ 
+[['text'=>"🔅کانال آموزش شبکه و اینترنت آزاد🔅",'url'=>"https://t.me/$channel1"]],
+[['text'=>"🔅کانال دانلود فیلم و سریال رایگان🔅",'url'=>"https://t.me/$channel22"]]
+]
+]);
+sendmessage($chat_id,"
+🔻لیست کانال های ربات🔻
+🔻برای ورود به کانال کافی است🔻
+🔻روی دکمه کلیک کنید🔻
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+",'true', $listchannel);
 }
-//Source_Home//
-if (file_exists("error_log")) unlink("error_log");
+//===============KING BOT===============\\
+elseif(strpos($text,"/start ") !== false){
+$xbs = str_replace("/start ", "", $text);
+$xb = str_replace(array("1","2","3","4","5","6","7","8","9","0"), array('q','w','e','r','t','y','u','i','o','p'), $xbs);
+if($chat_id == $xbs){ 
+sendmessage($chat_id,"☢خطا شما نمیتوانید با لینک زیر مجموعه خود عضو ربات شوید☢");
+return false;
 }
-/*
-کانال سورس خونه ! پر از سورس هاي ربات هاي تلگرامي !
-لطفا در کانال ما عضو شويد 
-@source_home
-https://t.me/source_home
-*/
+$user = file_get_contents("users.txt");
+$user1 = explode("\n",$user);
+if(!in_array($xbs , $user1)){
+sendmessage($chat_id , "☢این کاربر در ربات ما عضو نیست☢");
+return false;
+}
+if(!in_array($from_id,"$user1")){
+$xmls = simplexml_load_file("data/mo.xml");
+$mo = $xmls->$xb;
+$ajz = $mo+2;
+savedatas($xbs,"$ajz","mo");
+savedatas($from_id,"0","mo");
+sendmessage($chat_id,"کاربر گرامی به ربات دریافت شماره مجازی خیلی خوش آمدید❤️
+
+✅ به راحتی شماره مجازی بگیرید
+
+✅ با سرعت بالا و کاملا اتوماتیک
+
+✅ با کمترین امتیاز ممکن 
+🆔 $channel
+🌐 $channel2",'true',$keyboard);
+$user .= $from_id."\n";
+file_put_contents("users.txt",$user);
+sendmessage($xbs,"یک کاربر با شناسه $chat_id توسط شما دعوت شد و شما 1 امتیاز دریافت کردید");
+}
+}
+//===============KING BOT===============\\
+if($text == "🚗دریافت شماره🚗"){
+sendmessage($chat_id,"🌈سرویس مورد نظر را انتخاب کنید🌈",'', '', $typenumber);
+}
+if($text == "💎تلگرام"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "📺اینستاگرام"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "🔍گوگل"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "📳 واتس اپ"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "🐝بیتالک"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "💌لاین"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "📞وایبر"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "☂️ایمو"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "📱اسکایپ"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "🛃فیسبوک"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "✳️وی چت"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "📨یاهو"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "🗃مایکروسافت"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "🐣تویتر"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+if($text == "💰الکترونیوم"){
+sendmessage($chat_id,"🎡کشور را انتخاب کنید🎡",'true',$keshvar);
+}
+//===============KING BOT===============\\
+if($text == "روسیه 🇷🇺"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "فیلیپین 🇵🇭"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "میانمار 🇲🇲"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "انگلستان 🇬🇧"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "ماکائو 🇲🇴"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "هنگ کنگ 🇭🇰"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "تایلند 🇹🇭"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "فرانسه 🇫🇷"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "پرو 🇵🇪"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "نیجریه 🇳🇬"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "عربستان 🇸🇦"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "آمریکا 🇺🇸"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "اسپانیا 🇪🇸"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "ایرلند 🇮🇪"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "جامائیکا 🇯🇲"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "ایتالیا 🇮🇹"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "اسرائیل 🇮🇱"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "آرژانتین 🇦🇷"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "افغانستان 🇦🇫"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "الجزایر 🇩🇿"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "آذربایجان 🇦🇿"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "آلمان 🇩🇪"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "برزیل 🇧🇷"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "ژاپن 🇯🇵"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "هند 🇮🇳"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "انگلیس 🇬🇧"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "آفریقای جنوبی 🇿🇦"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "سوئد 🇸🇪"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "پرتغال 🇵🇹"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "کانادا 🇨🇦"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "استونی 🇪🇪"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "ترکیه 🇹🇷"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "چین 🇨🇳"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+if($text == "سوئیس 🇨🇭"){
+sendmessage($chat_id,"🌵موجودی شما کافی نیست🌵",'true',$back);
+}
+//===============KING BOT===============\\
+if($text == "🌅کد هدیه🌅"){
+savedatas($from_id,"scodevip","data");
+sendmessage($chat_id,"
+🎁کد هدیه را ارسال کنید🎁
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● @$botids ● 
+● $channel ●
+● $channel2 ●",'true',$back);
+}
+if($kingnetwork == "scodevip"){
+$codes = $xml->codevip;
+$countmo = $xml->codevipmo;
+if($text == $codes){
+$xmls = simplexml_load_file("data/mo.xml");
+$mo = $xmls->$cha_id + $countmo;
+savedatas($chat_id, $mo , "mo");
+sendmessage($chat_id , "
+🎁کد هدیه درست بود🎁
+🔯امتیاز به حساب شما واریز شد🔯
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● @$botids ● 
+● @$channel ●
+● @$channel2 ●");
+}
+if($text != $codes){
+sendmessage($chat_id,"
+🅾کد مورد نظر اشتباه است🅾
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● @$botids ● 
+● $channel ●
+● $channel2 ●",'true',$back);
+}
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if(in_array($chat_id , $admin)){
+if($text == "↩️منوی ادمین↩️" || $text == "/panel" || $text == "مدیریت"){
+sendmessage($chat_id,"به منوی ادمین خوش آمدید یک گزینه را انتخاب کنید🔘",'true',$menuadmin);
+}
+//===============KING BOT===============\\
+if($text == "امار🔮"){
+$user = file_get_contents("users.txt");
+$x_member = explode("\n",$user);
+$users = count($x_member) ;
+$keys = json_encode([ 'inline_keyboard'=>[ 
+[['text'=>"تعداد کاربران ربات= $users",'callback_data'=>"000000"]]
+]
+]);
+sendmessage($chat_id,"
+🔻آمار دقیق ربات🔻
+🔻به شرح زیر است🔻
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● $channel ●
+● $channel2 ●",'true', $keys);
+}
+//===============KING BOT===============\\
+if($text == "📚تنظیم متن راهنما"){
+savedatas($from_id,"settexthelp","data");
+sendmessage($chat_id,"متن راهنما📚 را ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "settexthelp"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("help",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "⚙️تنظیم موجودی شماره"){
+sendmessage($chat_id,"شماره مورد نظر را انتخاب کنید",'true',$setinfonumber);
+}
+//===============KING BOT===============\\
+if($text == "ارسال همگانی📮"){
+savedatas($from_id,"sendalltomessage","data");
+sendmessage($chat_id,"
+📮پیام خود را ارسال نمایید📮
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● $channel ●
+● $channel2 ●",'true',$backadmin);
+}
+elseif($kingnetwork == "sendalltomessage"){
+savedatas($from_id,"none","data");
+$user = file_get_contents("users.txt");
+$array_user = explode("\n",$user);
+foreach($array_user as $idm){
+sendmessage($chat_id,"پیام شما با موفقیت به تمام کاربران ربات ارسال شد",'true',$backadmin);
+}
+}
+//===============KING BOT===============\\
+if($text == "📮فوروارد همگانی"){
+savedatas($from_id,"sendalltoforward","data");
+sendmessage($chat_id,"
+📮پیام را فوروارد کنید📮
+〰〰〰〰〰〰〰〰〰〰〰〰〰〰
+● $channel ●
+● $channel2 ●",'true',$backadmin);
+}
+elseif($kingnetwork == "sendalltoforward"){
+savedatas($from_id,"none","data");
+$user = file_get_contents("users.txt");
+$array_user = explode("\n",$user);
+foreach($array_user as $idm){
+sendmessage($chat_id,"پیام شما با موفقیت به تمام کاربران ربات فوروارد شد",'true',$backadmin);
+}
+}
+
+//===============KING BOT===============\\
+if($text == "🔮تنظیم موجودی"){
+sendmessage($chat_id,"جهت افزودن موجودی از /add USERID MO بجای USERID ایدی عددی کاربر و بجای MO تعداد موجودی که قصد افزودنش را دارید \n\n\n جهت کسر موجودی از /kasr USERID MO استفاته کنید بجای USERID ایدی عددی و بجای Mo تعداد موجودی که قصد دارید کم شود");
+}
+if(strpos($text,"/kasr ") !== false){
+$xmls = simplexml_load_file("data/mo.xml");
+$data = explode(" ",$text);
+$userid = $data['1'];
+$userid = str_replace(array("1","2","3","4","5","6","7","8","9","0"), array('q','w','e','r','t','y','u','i','o','p'), $userid);
+$m_o = $data['2'];
+$dn = $xmls->$userid - $m_o;
+savedatas($userid,"$dn","mo");
+sendmessage($chat_id,"با موفقیت انجام شد");
+}
+//===============KING BOT===============\\
+if(strpos($text,"/add ") !== false){
+$xmls = simplexml_load_file("data/mo.xml");
+$data = explode(" ",$text);
+$userid = $data['1'];
+$userid = str_replace(array("1","2","3","4","5","6","7","8","9","0"), array('q','w','e','r','t','y','u','i','o','p'), $userid);
+$m_o = $data['2'];
+$dn = $xmls->$userid + $m_o;
+savedatas($userid,"$dn","mo");
+sendmessage($chat_id,"با موفقیت تعداد $m_o سکه به حساب ".str_replace(array('q','w','e','r','t','y','u','i','o','p'),array("1","2","3","4","5","6","7","8","9","0"),$userid)."اضافه شد.",'true',$backadmin);
+}
+//===============KING BOT===============\\
+if($text == "تنظیم متن قوانین📚"){
+savedatas($from_id,"settextvip","data");
+sendmessage($chat_id,"متن را ارسال کنید استفاده از کلمات کلیدی زیر سبب جایگزینی مقدار تعیین شده از سوی سرور میشود.
+FIRSTNAME = نمایش اسم کاربر
+CHATID = نمایش شناسه عددی کاربر
+LASTNAME = نمایش اسم خانوادگی کاربر
+
+کلمات کلیدی در متن با حتما کلمات بزرگ لاتین باشند در غیر این صورت کار ساز نیست
+",'true',$backadmin);
+}
+elseif($kingnetwork == "settextvip"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("textgetmo",$text,"data");
+savedatas($from_id,"none","data");
+}
+    
+//===============KING BOT===============\\
+if($text == "🇷🇺روسیه🇷🇺"){
+savedatas($from_id,"setnumberrus","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberrus"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("russia",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇵🇭فیلیپین🇵🇭"){
+savedatas($from_id,"setnumberphili","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberphili"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("phli",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇲🇲میانمار🇲🇲"){
+savedatas($from_id,"setnumbermianmar","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumbermianmar"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("mianmar",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇮🇹ایتالیا🇮🇹"){
+savedatas($from_id,"setnumberitaly","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberitaly"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("italy",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇦🇫افغانستان🇦🇫"){
+savedatas($from_id,"setnumberafghan","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberafghan"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("afghan",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇵🇹پرتغال🇵🇹"){
+savedatas($from_id,"setnumberporte","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberporte"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("porte",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇬🇧انگلستان🇬🇧"){
+savedatas($from_id,"setnumberuk","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberuk"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("uk",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇲🇴ماکائو🇲🇴"){
+savedatas($from_id,"setnumbermaka","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumbermaka"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("maka",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇭🇰هنگ کنگ🇭🇰"){
+savedatas($from_id,"setnumberhongkong","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberhongkong"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("hongkong",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇹🇭تایلند🇹🇭"){
+savedatas($from_id,"setnumberthilan","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberthilan"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("thilan",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇵🇪پرو🇵🇪"){
+savedatas($from_id,"setnumberpronum","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberpronum"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("pronum",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇫🇷فرانسه🇫🇷"){
+savedatas($from_id,"setnumberfrance","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberfrance"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("france",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇸🇦عربستان🇸🇦"){
+savedatas($from_id,"setnumberarabic","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberarabic"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("arabic",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇳🇬نیجریه🇳🇬"){
+savedatas($from_id,"setnumberniger","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberniger"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("niger",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇪🇸اسپانیا🇪🇸"){
+savedatas($from_id,"setnumberspain","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberspain"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("spain",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇺🇸آمریکا🇺🇸"){
+savedatas($from_id,"setnumberusa","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberusa"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("usa",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇯🇲جامائیکا🇯🇲"){
+savedatas($from_id,"setnumberjama","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberjama"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("jama",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇮🇪ایرلند🇮🇪"){
+savedatas($from_id,"setnumberirlan","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberirlan"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("irlan",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇮🇱اسرائیل🇮🇱"){
+savedatas($from_id,"setnumberisraee","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberisraee"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("israee",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇪🇪استونی🇪🇪"){
+savedatas($from_id,"setnumberesto","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberesto"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("esto",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇨🇦کانادا🇨🇦"){
+savedatas($from_id,"setnumbercana","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumbercana"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("cana",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇨🇳چین🇨🇳"){
+savedatas($from_id,"setnumberchain","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberchain"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("chain",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇹🇷ترکیه🇹🇷"){
+savedatas($from_id,"setnumberturk","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberturk"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("turk",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇨🇭سوئیس🇨🇭"){
+savedatas($from_id,"setnumbersoee","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumbersoee"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("soee",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇦🇷آرژانتین🇦🇷"){
+savedatas($from_id,"setnumberargan","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberargan"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("argan",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇦🇿آذربایجان🇦🇿"){
+savedatas($from_id,"setnumberazar","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberazar"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("azar",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇩🇿الجزایر🇩🇿"){
+savedatas($from_id,"setnumberalgazir","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberalgazir"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("algazir",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇧🇷برزیل🇧🇷"){
+savedatas($from_id,"setnumberbrazil","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberbrazil"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("brazil",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇩🇪آلمان🇩🇪"){
+savedatas($from_id,"setnumbergerman","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumbergerman"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("german",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇮🇳هند🇮🇳"){
+savedatas($from_id,"setnumberindia","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberindia"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("india",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇯🇵ژاپن🇯🇵"){
+savedatas($from_id,"setnumberjapan","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberjapan"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("japan",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇿🇦آفریقا جنوبی🇿🇦"){
+savedatas($from_id,"setnumberafrica","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumberafrica"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("africa",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🇸🇪سوئد🇸🇪"){
+savedatas($from_id,"setnumbersoed","data");
+sendmessage($chat_id,"مقدار را به صورت عدد ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "setnumbersoed"){
+sendmessage($chat_id,"تنظیم شد",'true',$backadmin);
+savedatas("soed",$text,"data");
+savedatas($from_id,"none","data");
+}
+//===============KING BOT===============\\
+if($text == "🎈ساخت کد هدیه🎈"){
+savedatas($from_id,"createcodevip","data");
+sendmessage($chat_id,"کد را ارسال کنید",'true',$backadmin);
+}
+if($kingnetwork == "createcodevip"){
+sendmessage($chat_id,"تنظیم شد مقدار موجودی کد را ارسال کنید");
+savedatas("codevip",$text,"data");
+savedatas($from_id,"setmocodevip","data");
+}
+if($kingnetwork == "setmocodevip"){
+sendmessage($chat_id,"ساخته شد این کد از این پس توسط هر کس وارد گردد موجودی $text را دریاف میکند",'true',$backadmin);
+savedatas("codevipmo",$text,"data");
+savedatas($from_id,"none","data");
+}
+}
+//===============KING BOT===============\\
 ?>

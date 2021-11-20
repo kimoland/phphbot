@@ -119,16 +119,16 @@ sendmsg($user_id,"هرگونه سوال . انتقاد و پیشنهادی دا�
 🆔 @Source_Home",$msg_id,$Yousefi);
 }
 
-elseif (strpos($text , "/ban") !== false && $chat_id == $admin)
+elseif (strpos($txt_msg , "/baned") !== false && $chat_id == $admin)
 {
-$bban = str_replace('/ban','',$text);
-if ($bban != '')
+$ict = str_replace('/baned','',$txt_msg);
+if ($baned != '')
 {
 $myfile2 = fopen("banlist.txt", "a") or die("Unable to open file!"); 
-fwrite($myfile2, "$bban\n");
+fwrite($myfile2, "$baned\n");
 fclose($myfile2);
-sendmsg($chat_id,"`کاربر $bban با موفقیت مسدود شد🍃`");
-sendmsg($chanell,"`کاربر $bban از سرور ربات ساز مسدود شد🍃`");
+sendmsg($chat_id,"کاربر $baned با موفقیت مسدود شد");
+sendmsg($baned,"شما توسط مدیریت ربات ⛔️ مسدود  شده اید دوست من");
 }
 }
 

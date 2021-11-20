@@ -47,7 +47,11 @@ $step = file_get_contents("data/".$from_id."/step.txt");
 $members = file_get_contents('data/users.txt');
 $ban = file_get_contents('banlist.txt');
 $uvip = file_get_contents('data/vips.txt');
-$chanell = '@1';
+$chanell = 'hslu78tvhos254';
+$channel="hslu78tvhos254";
+$token="1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA";
+$truechannel = json_decode(file_get_contents("https://api.telegram.org/bot".$token."/getChatMember?chat_id=@".$channel."&user_id=".$from_id));
+$tch = $truechannel->result->status;
 function SendMessage($ChatId, $TextMsg)
 {
 makereq('sendMessage',[
@@ -81,7 +85,7 @@ if (strpos($ban , "$from_id") !== false  ) {
 SendMessage($chat_id,"");
 	}
 
-elseif ($textmessage == '🔙 برگشت')
+if($textmessage == '🔙 برگشت')
 {save("data/$from_id/step.txt","none");
 var_dump(makereq('sendMessage',[
 'chat_id'=>$update->message->chat->id,
@@ -98,26 +102,65 @@ var_dump(makereq('sendMessage',[
         )
     );
 }
-elseif ($textmessage == '📋راهنما')
+elseif($tch != 'member' && $tch != 'creator' && $tch != 'administrator'){
+    SendMessage($chat_id,"📛 برای حمایت از ما و همچنان ربات ابتدا وارد کانال زیر بشید 👇
+
+@$channel
+
+✅ سپس روی JOIN بزنید و به ربات برگشته عبارت 👇
+
+🔸 /start
+✴️ رو بزنید تا دکمه های ربات نمایش داده بشن👌","html","true",$button_remove);
+elseif($textmessage == '/start')
 {
-SendMessage($chat_id,"برای ساخت ربات جدید روی دکمه 🤖 ساخت ربات بزنید.\n\nبرای حذف ربات روی دکمه ❌ حذف ربات بزنید.\n\nبرای دیدن تعداد ربات ها خود روی دکمه 🚀 ربات های من بزنید.\n🤖 @2");
+if (!file_exists("data/$from_id/step.txt"))
+{mkdir("data/$from_id");
+save("data/$from_id/step.txt","none");
+save("data/$from_id/tedad.txt","0");
+save("data/$from_id/bots.txt","");
+$myfile2 = fopen("data/users.txt", "a") or die("Unable to open file!"); 
+fwrite($myfile2, "$from_id\n");
+fclose($myfile2);
 }
-elseif ($textmessage == '/back')
-{save("data/$from_id/step.txt","none");
 var_dump(makereq('sendMessage',[
 'chat_id'=>$update->message->chat->id,
 'text'=>"سلام😃👋\n\n- به ربات ساز حرفه ای تلگرام خوش آمدید🌹\n- به راحتی برای خود یک ربات تلگرامی رایگان بسازید🎯\n- برای ساخت ربات جدید دکمه ساخت ربات را بزنید🤖\n🎗 @2 🎗",
 'parse_mode'=>'Html',
 'reply_markup'=>json_encode(['keyboard'=>
 [
-[['text'=>"تبدیل فایل"],['text'=>"🎗ربات های من"]],
-[['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
+    [['text'=>"تبدیل فایل"],['text'=>"🎗ربات های من"]],
+    [['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
 ],
 'resize_keyboard'=>false
                             ])
                                ]
         )
     );
+}
+elseif ($textmessage == '🗑حذف ربات') {
+if (file_exists("data/$from_id/step.txt"))
+{}
+$botname = file_get_contents("data/$from_id/bots.txt");
+if ($botname == "")
+{SendMessage($chat_id,"❗️شما هنوز هیچ رباتی نساخته اید❗️");}
+else
+{
+var_dump(makereq('sendMessage',[
+'chat_id'=>$update->message->chat->id,
+'text'=>"🤖ربات مورد نظر خود را انتخاب نمایید🤖",
+'parse_mode'=>'MarkDown',
+'reply_markup'=>json_encode(['inline_keyboard'=>
+[[['text'=>"👉 @".$botname,'callback_data'=>"del ".$botname]]]
+                            ])
+                               ]
+        )
+    );
+
+}
+}
+elseif ($textmessage == '📋راهنما')
+{
+SendMessage($chat_id,"برای ساخت ربات جدید روی دکمه 🤖 ساخت ربات بزنید.\n\nبرای حذف ربات روی دکمه ❌ حذف ربات بزنید.\n\nبرای دیدن تعداد ربات ها خود روی دکمه 🚀 ربات های من بزنید.\n🤖 @2");
 }
 elseif ($textmessage == 'آمار📋' && $from_id == $admin){
 $number = count(scandir("bots"))-1;
@@ -176,53 +219,6 @@ var_dump(makereq('sendMessage',[
                                 ]
         )
     );
-}
-elseif($textmessage == '/start')
-{
-if (!file_exists("data/$from_id/step.txt"))
-{mkdir("data/$from_id");
-save("data/$from_id/step.txt","none");
-save("data/$from_id/tedad.txt","0");
-save("data/$from_id/bots.txt","");
-$myfile2 = fopen("data/users.txt", "a") or die("Unable to open file!"); 
-fwrite($myfile2, "$from_id\n");
-fclose($myfile2);
-}
-var_dump(makereq('sendMessage',[
-'chat_id'=>$update->message->chat->id,
-'text'=>"سلام😃👋\n\n- به ربات ساز حرفه ای تلگرام خوش آمدید🌹\n- به راحتی برای خود یک ربات تلگرامی رایگان بسازید🎯\n- برای ساخت ربات جدید دکمه ساخت ربات را بزنید🤖\n🎗 @2 🎗",
-'parse_mode'=>'Html',
-'reply_markup'=>json_encode(['keyboard'=>
-[
-    [['text'=>"تبدیل فایل"],['text'=>"🎗ربات های من"]],
-    [['text'=>" 📢کانال ما"],['text'=>"📜ارسال نظر"]]
-],
-'resize_keyboard'=>false
-                            ])
-                               ]
-        )
-    );
-}
-elseif ($textmessage == '🗑حذف ربات') {
-if (file_exists("data/$from_id/step.txt"))
-{}
-$botname = file_get_contents("data/$from_id/bots.txt");
-if ($botname == "")
-{SendMessage($chat_id,"❗️شما هنوز هیچ رباتی نساخته اید❗️");}
-else
-{
-var_dump(makereq('sendMessage',[
-'chat_id'=>$update->message->chat->id,
-'text'=>"🤖ربات مورد نظر خود را انتخاب نمایید🤖",
-'parse_mode'=>'MarkDown',
-'reply_markup'=>json_encode(['inline_keyboard'=>
-[[['text'=>"👉 @".$botname,'callback_data'=>"del ".$botname]]]
-                            ])
-                               ]
-        )
-    );
-
-}
 }
 elseif ($textmessage == '/panel')
 if ($from_id == $admin)

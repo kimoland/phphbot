@@ -47,11 +47,9 @@ $step = file_get_contents("data/".$from_id."/step.txt");
 $members = file_get_contents('data/users.txt');
 $ban = file_get_contents('banlist.txt');
 $uvip = file_get_contents('data/vips.txt');
-$chanell = 'hslu78tvhos254';
-$channel="hslu78tvhos254";
-$token="1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA";
-$truechannel = json_decode(file_get_contents("https://api.telegram.org/bot".$token."/getChatMember?chat_id=@".$channel."&user_id=".$from_id));
+$truechannel = json_decode(file_get_contents("https://api.telegram.org/bot$rono/getChatMember?chat_id=@king_network7&user_id=".$from_id));
 $tch = $truechannel->result->status;
+$rono = API_KEY;
 function SendMessage($ChatId, $TextMsg)
 {
 makereq('sendMessage',[
@@ -85,7 +83,7 @@ if (strpos($ban , "$from_id") !== false  ) {
 SendMessage($chat_id,"");
 	}
 
-if($textmessage == '🔙 برگشت')
+elseif ($textmessage == '🔙 برگشت')
 {save("data/$from_id/step.txt","none");
 var_dump(makereq('sendMessage',[
 'chat_id'=>$update->message->chat->id,
@@ -102,18 +100,10 @@ var_dump(makereq('sendMessage',[
         )
     );
 }
-elseif($tch != 'member' && $tch != 'creator' && $tch != 'administrator'){
-    SendMessage($chat_id,"📛 برای حمایت از ما و همچنان ربات ابتدا وارد کانال زیر بشید 👇
 
-@$channel
-
-✅ سپس روی JOIN بزنید و به ربات برگشته عبارت 👇
-
-🔸 /start
-✴️ رو بزنید تا دکمه های ربات نمایش داده بشن👌","html","true",$button_remove);
 elseif($textmessage == '/start')
 {
-if (!file_exists("data/$from_id/step.txt"))
+  elseif (!file_exists("data/$from_id/step.txt"))
 {mkdir("data/$from_id");
 save("data/$from_id/step.txt","none");
 save("data/$from_id/tedad.txt","0");
@@ -137,6 +127,19 @@ var_dump(makereq('sendMessage',[
         )
     );
 }
+
+elseif($tch != 'member' && $tch != 'creator' && $tch != 'administrator'){
+	SendMessage($chat_id,"📛 برای حمایت از ما و همچنان ربات ابتدا وارد کانال زیر بشید 👇
+
+🆔 @king_network7
+
+✅ سپس روی JOIN بزنید و به ربات برگشته عبارت 👇
+
+🔸 /start
+
+✴️ رو بزنید تا دکمه های ربات نمایش داده بشن👌","html","true");
+	}
+
 elseif ($textmessage == '🗑حذف ربات') {
 if (file_exists("data/$from_id/step.txt"))
 {}

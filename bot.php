@@ -1,4 +1,4 @@
-s<?php
+<?php
 
 set_time_limit(0);
 
@@ -100,7 +100,6 @@ $text = $message->text;
 @$list = file_get_contents("users.txt");
 $ADMIN = 710732845;
 $idbot = file_get_contents("data/idbot.txt");
-$uadmin = adaminsss;
 $frosh = file_get_contents("data/frosh.txt");
 $sharzh_h1000 = file_get_contents("data/channel.txt");
 $sharzh_ir300 = file_get_contents("data/channel2.txt");

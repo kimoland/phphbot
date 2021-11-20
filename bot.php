@@ -1,21 +1,6 @@
 <?php
 define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
-function objectToArrays($object)
-{
-if (!is_object($object) && !is_array($object)) {
-return $object;
-}
-if (is_object($object)) {
-$object = get_object_vars($object);
-}
-return array_map("objectToArrays", $object);
-}
-function save($filename,$TXTdata)
-{
-$myfile = fopen($filename, "w") or die("Unable to open file!");
-fwrite($myfile, "$TXTdata");
-fclose($myfile);
-}
+
 //====================(@Source_Home)======================//
 #variables
 $get = json_decode(file_get_contents('php://input'));
@@ -24,6 +9,7 @@ $chatid = $update->callback_query->message->chat->id;
 $chat_id = $update->message->chat->id;
 $user_id = $get->message->from->id;
 $msg_id = $get->message->message_id;
+$ban = file_get_contents('banlist.txt');
 $admin = 710732845;
 mkdir("data/$chat_id");
 //====================(@Source_Home)======================//
@@ -39,6 +25,22 @@ function MEhdiYousefi($method,$datas=[]){$url = 'https://api.telegram.org/bot'.A
 //====================(@Source_Home)======================//
 #function
 function sendmsg($user_id,$txt_msg,$msg_id,$key = null) {MEhdiYousefi('sendmessage', ['chat_id'=>$user_id, 'text'=>$txt_msg, 'reply_to_message_id'=>$msg_id,'reply_markup'=>$key,]);
+}
+function objectToArrays($object)
+{
+if (!is_object($object) && !is_array($object)) {
+return $object;
+}
+if (is_object($object)) {
+$object = get_object_vars($object);
+}
+return array_map("objectToArrays", $object);
+}
+function save($filename,$TXTdata)
+{
+$myfile = fopen($filename, "w") or die("Unable to open file!");
+fwrite($myfile, "$TXTdata");
+fclose($myfile);
 }
 //====================(@Source_Home)======================//
 $menu = json_encode([

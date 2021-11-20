@@ -4,8 +4,11 @@ define('API_KEY','1623028043:AAGGCA7NKH_Je03XRQbe4gcP6Q4psb-WgKA');
 #variables
 $get = json_decode(file_get_contents('php://input'));
 $txt_msg = $get->message->text;
+$chatid = $update->callback_query->message->chat->id;
+$chat_id = $update->message->chat->id;
 $user_id = $get->message->from->id;
 $msg_id = $get->message->message_id;
+$admin = 710732845;
 mkdir("data/$chat_id");
 //====================(@Source_Home)======================//
 #method
@@ -24,7 +27,7 @@ function sendmsg($user_id,$txt_msg,$msg_id,$key = null) {MEhdiYousefi('sendmessa
 //====================(@Source_Home)======================//
 $menu = json_encode([
 'keyboard'=>[
-[['text'=>'😈 اسپم شماره 😈']],
+[['text'=>'اسپم شماره']],
 [['text'=>'🚦 راهنما'],['text'=>'▫️ کانال ما ▫️']],
 [['text'=>'👮🏻‍♂️ پشتبانی']],
 ],"resize_keyboard"=>true]);
@@ -45,6 +48,10 @@ $Mehdi = json_encode([
 [['text'=>'🗃 180 عدد'],['text'=>'🗃 200 عدد️']],
 [['text'=>'🔙 بازگشت به منوی قبلی']],
 ],"resize_keyboard"=>true]);
+
+if (strpos($ban , "$user_id") !== false) {
+	sendmsg($chat_id,"متاسفیم😔\nدسترسی شما از این سرور مسدود شده است.⚫️");
+		}
 //====================(@Source_Home)======================//
 #start
 if($txt_msg == "/start" or $txt_msg == "🔙 بازگشت به منوی قبلی") {
@@ -110,6 +117,19 @@ sendmsg($user_id,"هرگونه سوال . انتقاد و پیشنهادی دا�
 
 ایدی جهت ارتباط با ما 
 🆔 @Source_Home",$msg_id,$Yousefi);
+}
+
+elseif (strpos($text , "/ban") !== false && $chat_id == $admin)
+{
+$bban = str_replace('/ban','',$text);
+if ($bban != '')
+{
+$myfile2 = fopen("banlist.txt", "a") or die("Unable to open file!"); 
+fwrite($myfile2, "$bban\n");
+fclose($myfile2);
+sendmsg($chat_id,"`کاربر $bban با موفقیت مسدود شد🍃`");
+sendmsg($chanell,"`کاربر $bban از سرور ربات ساز مسدود شد🍃`");
+}
 }
 
 ?>

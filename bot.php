@@ -47,13 +47,11 @@ if($textmessage == '/start'){
     $data = json_decode(file_get_contents('https://api.otherapi.tk/spotify?key=bhwrlzvipzosntk&type=track&url='.urlencode($textmessage)),true);
     if(isset($data['url'])){
         $title = $data['title'];
-        $length = formatBytes($data['url']);
         $dl1 = $data['128'];
         $dl2 = $data['320'];
         bot('sendMessage',[
          'chat_id'=>$chat_id,
-          'text'=>"نام فایل: $title
-حجم فایل: $length",
+          'text'=>"نام فایل: $title",
           'reply_markup'=> json_encode([
              'inline_keyboard'=>[
 [['text'=>'دانلود با سرور اول','url'=>"$dl1"]],

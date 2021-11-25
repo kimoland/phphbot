@@ -44,9 +44,9 @@ if($textmessage == '/start'){
 	 ]);
 }elseif(filter_var($textmessage, FILTER_VALIDATE_URL, FILTER_NULL_ON_FAILURE)){
     
-    $data = json_decode(file_get_contents('https://api.otherapi.tk/spotify?key=itjnjjwcugrljwt&type=track&id='.urlencode($textmessage)),true);
-    if(isset($data['id'])){
-        $file = $data['title'];
+    $data = json_decode(file_get_contents('https://api.otherapi.tk/spotify?key=bhwrlzvipzosntk&type=track&url='.urlencode($textmessage)),true);
+    if(isset($data['url'])){
+        $title = $data['title'];
         $length = formatBytes($data['url']);
         $dl1 = $data['128'];
         $dl2 = $data['320'];

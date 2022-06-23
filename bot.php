@@ -113,26 +113,23 @@ $proxy
  if ($text == "/admin") {
         bot('sendmessage', [
             'chat_id' => $admin,
-            'text' => "ها چیه",
+            'text' => "Select...",
             'reply_to_message_id' => $message_id2,
             'parse_mode' => "MarkDown",
             'reply_markup' => json_encode([
                 'keyboard' => [
-                    [
-                        ['text' => "امار"],['text'=>"برگشت"]
-                    ]
-                ]
-            ])
+                    [['text' => "Status"],['text'=>"Back"]]
+                    ],'resize_keyboard'=>true])
         ]);
     } 
-	elseif ($text == "امار") {
+	elseif ($text == "Status") {
         $user = file_get_contents("users.txt");
         $member_id = explode("\n", $user);
         $member_count = count($member_id) - 1;
  
         bot('sendmessage', [
             'chat_id'=>$chat_id,
-            'text' => "تعداد ممبر ها : $member_count",
+            'text' => "Mebers Count : $member_count",
             'parse_mode' => "MarkDown",
         ]);
     }

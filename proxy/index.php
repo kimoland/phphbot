@@ -25,7 +25,7 @@ for ($i = 1; $i < count($json);$i++)
     $ip = $json[$i]["ip"];
     $port = $json[$i]["prt"];
     $secret = $json[$i]["secret"];
-    $message .= "🌐پروکسی $i : "."https://t.me/proxy?server=$ip&port=$port&secret=$secret"."\n\n";
+    $message .= "🌐Proxy $i : "."https://t.me/proxy?server=$ip&port=$port&secret=$secret"."\n\n";
 }
 
 ?>

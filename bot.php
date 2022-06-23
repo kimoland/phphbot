@@ -43,10 +43,10 @@ if ($text == "/start") {
         if (!in_array($from_id, $members)) {
             $add_user = file_get_contents('users.txt');
             $add_user .= $from_id . "\n";
-            file_put_contents("data/$chat_id/membrs.txt", "0");
+            file_put_contents("data/$chat_id/users.txt", "0");
             file_put_contents('users.txt', $add_user);
         }
-        file_put_contents("data/$chat_id/ali.txt", "no");
+        file_put_contents("data/$chat_id/users.txt", "no");
         
         bot('sendmessage', [
             'chat_id' => $chat_id,

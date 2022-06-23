@@ -25,15 +25,10 @@ for ($i = 0; $i < count($json);$i++)
     $ip = $json[$i]["ip"];
     $port = $json[$i]["prt"];
     $secret = $json[$i]["secret"];
-    $message .= "https://t.me/proxy?server=$ip&port=$port&secret=$secret"."<br><br>";
+    $message .= "https://t.me/proxy?server=$ip&port=$port&secret=$secret \n\n";
 }
 
 ?>
 
-<html>
-  <head>      
-  </head>
-  <body>
-    <?php echo $message; ?>
-  </body>
-</html>
+<?php echo $message; ?>
+

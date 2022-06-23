@@ -64,6 +64,7 @@ if ($text == "GetProxy" || $text == "/get"){
     bot('sendmessage',[
         'chat_id'=>$chat_id,
         'text'=>"➖➖➖➖➖➖➖➖➖➖➖
+
 	
 $proxy
 ➖➖➖➖➖➖➖➖➖➖➖
@@ -94,6 +95,7 @@ if ($text == "Reload"){
     bot('sendmessage',[
         'chat_id'=>$chat_id,
         'text'=>"➖➖➖➖➖➖➖➖➖➖➖
+
 	
 $proxy
 ➖➖➖➖➖➖➖➖➖➖➖

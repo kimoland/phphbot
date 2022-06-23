@@ -20,12 +20,12 @@ $dec = substr($dec,16,strlen($dec));
 
 
 $json = json_decode($dec,true);
-for ($i = 0; $i < count($json);$i++)
+for ($i = 1; $i < count($json);$i++)
 {
     $ip = $json[$i]["ip"];
     $port = $json[$i]["prt"];
     $secret = $json[$i]["secret"];
-    $message .= "🌐پروکسی $i "."https://t.me/proxy?server=$ip&port=$port&secret=$secret"."\n\n";
+    $message .= "🌐پروکسی $i : "."https://t.me/proxy?server=$ip&port=$port&secret=$secret"."\n\n";
 }
 
 ?>

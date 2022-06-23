@@ -1,8 +1,6 @@
 <?php 
-
-define('API_KEY','1491491242:AAHX1Yj0f6hsI8fTDD_wg2DbAh355DGqPo4');
-
-function Bot($method,$datas=[]){
+define('API_KEY', '1491491242:AAHX1Yj0f6hsI8fTDD_wg2DbAh355DGqPo4');
+function bot($method,$datas=[]){
     $url = "https://api.telegram.org/bot".API_KEY."/".$method;
     $ch = curl_init();
     curl_setopt($ch,CURLOPT_URL,$url);
@@ -12,56 +10,140 @@ function Bot($method,$datas=[]){
     if(curl_error($ch)){
         var_dump(curl_error($ch));
     }else{
-       return json_decode($res);
+        return json_decode($res);
     }
 }
-function formatBytes($bytes, $precision = 2) { 
-    $units = array('B', 'KB', 'MB', 'GB', 'TB'); 
 
-    $bytes = max($bytes, 0); 
-    $pow = floor(($bytes ? log($bytes) : 0) / log(1024)); 
-    $pow = min($pow, count($units) - 1); 
+function sendmessage($chat_id, $text){
+ bot('sendMessage',[
+ 'chat_id'=>$chat_id,
+ 'text'=>$text,
+ 'parse_mode'=>"MarkDown"
+ ]);
+ }
 
-    // Uncomment one of the following alternatives
-     $bytes /= pow(1024, $pow);
-     //$bytes /= (1 << (10 * $pow)); 
+ $update = json_decode(file_get_contents('php://input'));
+$message = $update->message; 
+$chat_id = $message->chat->id;
+$text = $message->text;
+$message_id = $message->message_id;
+$from_id = $message->from->id;
+$firstname = $message->from->first_name;
+$lastname = $message->from->last_name;
+$username = $message->from->username;
+$proxy = file_get_contents("https://proxykn7.herokuapp.com/proxy");
+$admin = 710732845;
+$message_id2 = $message->message_id;
 
-    return round($bytes, $precision) . ' ' . $units[$pow]; 
-} 
-$update = json_decode(file_get_contents('php://input'));
-if(isset($update->message)){
-    $message = $update->message; 
-    $chat_id = $message->chat->id;
-    $message_id = $message->message_id;
-    $textmessage = $message->text;
+//==================================
+if ($text == "/start") {
+    
+        $user = file_get_contents('users.txt');
+        $members = explode("\n", $user);
+        if (!in_array($from_id, $members)) {
+            $add_user = file_get_contents('users.txt');
+            $add_user .= $from_id . "\n";
+            file_put_contents("data/$chat_id/membrs.txt", "0");
+            file_put_contents('users.txt', $add_user);
+        }
+        file_put_contents("data/$chat_id/ali.txt", "no");
+        
+        bot('sendmessage', [
+            'chat_id' => $chat_id,
+ 'text'=>"Send GetProxy Or /get",
+ 'reply_to_message_id' => $message_id2,
+ 'parse_mode'=>"MarkDown",
+ 'reply_markup'=>json_encode([
+     'keyboard'=>[
+        [['text'=>"GetProxy"]]
+             ]
+             ])
+ ]); 
 }
-if($textmessage == '/start'){
-	    bot('sendMessage',[
-         'chat_id'=>$chat_id,
-          'text'=>"به ربات نیم بها خوش امدید!
-          
-جهت نیم بها کردن لینک فایل موردنظر خود را ارسال کنید:",
-	 ]);
-}elseif($textmessage == '/get')){
-$api = file_get_contents("https://mrpooya.xyz/api/TeleFay.php");
-	bot('sendMessage',[
-         'chat_id'=>$chat_id,
-         'text'=>$api,
-	 ]);
-    }else{
-        bot('sendMessage',[
-         'chat_id'=>$chat_id,
-          'text'=>"Error",
-	 ]);
+//===========================//
+if ($text == "GetProxy" || $text == "/get"){
+    bot('sendmessage',[
+        'chat_id'=>$chat_id,
+        'text'=>"➖➖➖➖➖➖➖➖➖➖➖
+
+$proxy
+
+➖➖➖➖➖➖➖➖➖➖➖",
+        'reply_to_message_id' => $message_id2,
+ 'parse_mode'=>"MarkDown",
+ 'reply_markup'=>json_encode([
+     'keyboard'=>[
+         [
+            
+             ['text'=>"Back"],['text'=>"Reload"]
+             ]
+             ]
+             ])
+ ]); 
+}
+//=====================//
+if ($text == "Back"){
+    bot('sendmessage',[
+        'chat_id'=>$chat_id,
+        'text'=>"Send GetProxy Or /get",
+        'reply_to_message_id' => $message_id2,
+ 'parse_mode'=>"MarkDown",
+ 'reply_markup'=>json_encode([
+     'keyboard'=>[
+        [
+             ['text'=>"GetProxy"]
+             ]
+             ]
+             ])
+ ]); 
+}
+//================\\
+if ($text == "Reload"){
+    bot('sendmessage',[
+        'chat_id'=>$chat_id,
+        'text'=>"➖➖➖➖➖➖➖➖➖➖➖
+
+$proxy
+
+➖➖➖➖➖➖➖➖➖➖➖",
+        'reply_to_message_id' => $message_id2,
+ 'parse_mode'=>"MarkDown",
+ 'reply_markup'=>json_encode([
+     'keyboard'=>[
+         [
+             ['text'=>"Back"],['text'=>"Reload"]
+             ]
+             ]
+             ])
+ ]); 
+}
+
+//=================//
+ if ($text == "/admin") {
+        bot('sendmessage', [
+            'chat_id' => $admin,
+            'text' => "ها چیه",
+            'reply_to_message_id' => $message_id2,
+            'parse_mode' => "MarkDown",
+            'reply_markup' => json_encode([
+                'keyboard' => [
+                    [
+                        ['text' => "امار"],['text'=>"برگشت"]
+                    ]
+                ]
+            ])
+        ]);
+    } 
+	elseif ($text == "امار") {
+        $user = file_get_contents("users.txt");
+        $member_id = explode("\n", $user);
+        $member_count = count($member_id) - 1;
+ 
+        bot('sendmessage', [
+            'chat_id'=>$chat_id,
+            'text' => "تعداد ممبر ها : $member_count",
+            'parse_mode' => "MarkDown",
+        ]);
     }
-    
-}else{
-     bot('sendMessage',[
-         'chat_id'=>$chat_id,
-          'text'=>"Error",
-	 ]);
-}
-
-    
 
 ?>

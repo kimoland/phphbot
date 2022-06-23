@@ -56,8 +56,7 @@ if ($text == "/start") {
  'reply_markup'=>json_encode([
      'keyboard'=>[
         [['text'=>"GetProxy"]]
-             ]
-             ])
+             ],'resize_keyboard'=>true])
  ]); 
 }
 //===========================//
@@ -68,7 +67,8 @@ if ($text == "GetProxy" || $text == "/get"){
 
 $proxy
 
-➖➖➖➖➖➖➖➖➖➖➖",
+➖➖➖➖➖➖➖➖➖➖➖
+@King_Network7",
         'reply_to_message_id' => $message_id2,
  'parse_mode'=>"html",
  'reply_markup'=>json_encode([
@@ -83,7 +83,7 @@ if ($text == "Back"){
         'chat_id'=>$chat_id,
         'text'=>"Send GetProxy Or /get",
         'reply_to_message_id' => $message_id2,
- 'parse_mode'=>"html",
+ 'parse_mode'=>"MarkDown",
  'reply_markup'=>json_encode([
      'keyboard'=>[
         [['text'=>"GetProxy"]]

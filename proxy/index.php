@@ -20,7 +20,7 @@ $dec = substr($dec,16,strlen($dec));
 
 
 $json = json_decode($dec,true);
-for ($i = 1; $i < count($json);$i++)
+for ($i = 0; $i < count($json);$i++)
 {
     $ip = $json[$i]["ip"];
     $port = $json[$i]["prt"];

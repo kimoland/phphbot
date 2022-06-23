@@ -18,7 +18,7 @@ function sendmessage($chat_id, $text){
  bot('sendMessage',[
  'chat_id'=>$chat_id,
  'text'=>$text,
- 'parse_mode'=>"MarkDown"
+ 'parse_mode'=>"html"
  ]);
  }
 
@@ -43,22 +43,21 @@ if ($text == "/start") {
         if (!in_array($from_id, $members)) {
             $add_user = file_get_contents('users.txt');
             $add_user .= $from_id . "\n";
-            file_put_contents("data/$chat_id/users.txt", "0");
+            file_put_contents("data/$chat_id/membrs.txt", "0");
             file_put_contents('users.txt', $add_user);
         }
-        file_put_contents("data/$chat_id/users.txt", "no");
+        file_put_contents("data/$chat_id/ali.txt", "no");
         
         bot('sendmessage', [
             'chat_id' => $chat_id,
- 'text'=>"Send GetProxy Or /get 
- 
- @King_Network7",
+ 'text'=>"Send GetProxy Or /get ",
  'reply_to_message_id' => $message_id2,
- 'parse_mode'=>"MarkDown",
+ 'parse_mode'=>"html",
  'reply_markup'=>json_encode([
      'keyboard'=>[
         [['text'=>"GetProxy"]]
-        ],'resize_keyboard'=>true])
+             ]
+             ])
  ]); 
 }
 //===========================//
@@ -84,7 +83,7 @@ if ($text == "Back"){
         'chat_id'=>$chat_id,
         'text'=>"Send GetProxy Or /get",
         'reply_to_message_id' => $message_id2,
- 'parse_mode'=>"MarkDown",
+ 'parse_mode'=>"html",
  'reply_markup'=>json_encode([
      'keyboard'=>[
         [['text'=>"GetProxy"]]
@@ -115,7 +114,7 @@ $proxy
             'chat_id' => $admin,
             'text' => "Select...",
             'reply_to_message_id' => $message_id2,
-            'parse_mode' => "MarkDown",
+            'parse_mode' => "html",
             'reply_markup' => json_encode([
                 'keyboard' => [
                     [['text' => "Status"],['text'=>"Back"]]
@@ -130,7 +129,7 @@ $proxy
         bot('sendmessage', [
             'chat_id'=>$chat_id,
             'text' => "Mebers Count : $member_count",
-            'parse_mode' => "MarkDown",
+            'parse_mode' => "html",
         ]);
     }
 

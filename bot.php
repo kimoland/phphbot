@@ -42,33 +42,23 @@ if($textmessage == '/start'){
           
 جهت نیم بها کردن لینک فایل موردنظر خود را ارسال کنید:",
 	 ]);
-}elseif(filter_var($textmessage, FILTER_VALIDATE_URL, FILTER_NULL_ON_FAILURE)){
-    
-    $data = json_decode(file_get_contents('https://api.otherapi.tk/spotify?key=bhwrlzvipzosntk&type=track&url='.urlencode($textmessage)));
-    if(isset($data['true'])){
-        $title = $data['title'];
-        $dl1 = $data['128'];
-        $dl2 = $data['320'];
-        bot('sendMessage',[
+}elseif($textmessage == '/get')){
+$api = file_get_contents("https://mrpooya.xyz/api/TeleFay.php");
+	bot('sendMessage',[
          'chat_id'=>$chat_id,
-          'text'=>"نام فایل: $title",
-          'reply_markup'=> json_encode([
-             'inline_keyboard'=>[
-[['text'=>'دانلود با سرور اول','url'=>"$dl1"]],
-[['text'=>'دانلود با سرور دوم','url'=>"$dl2"]]
-]])
+         'text'=>$api,
 	 ]);
     }else{
         bot('sendMessage',[
          'chat_id'=>$chat_id,
-          'text'=>"لینک نامعتبر!",
+          'text'=>"Error",
 	 ]);
     }
     
 }else{
      bot('sendMessage',[
          'chat_id'=>$chat_id,
-          'text'=>"لینک نامعتبر!",
+          'text'=>"Error",
 	 ]);
 }
 

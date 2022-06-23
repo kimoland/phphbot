@@ -50,7 +50,7 @@ if ($text == "/start") {
         
         bot('sendmessage', [
             'chat_id' => $chat_id,
- 'text'=>"Send GetProxy Or /get",
+ 'text'=>"Send GetProxy Or /get \n\n @King_Network7",
  'reply_to_message_id' => $message_id2,
  'parse_mode'=>"MarkDown",
  'reply_markup'=>json_encode([

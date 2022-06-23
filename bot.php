@@ -64,9 +64,8 @@ if ($text == "GetProxy" || $text == "/get"){
     bot('sendmessage',[
         'chat_id'=>$chat_id,
         'text'=>"➖➖➖➖➖➖➖➖➖➖➖
-
+	
 $proxy
-
 ➖➖➖➖➖➖➖➖➖➖➖
 @King_Network7",
         'reply_to_message_id' => $message_id2,
@@ -95,10 +94,10 @@ if ($text == "Reload"){
     bot('sendmessage',[
         'chat_id'=>$chat_id,
         'text'=>"➖➖➖➖➖➖➖➖➖➖➖
-
+	
 $proxy
-
-➖➖➖➖➖➖➖➖➖➖➖",
+➖➖➖➖➖➖➖➖➖➖➖
+@King_Network7",
 'reply_to_message_id' => $message_id2,
  'parse_mode'=>"html",
  'reply_markup'=>json_encode([

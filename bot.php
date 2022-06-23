@@ -56,8 +56,7 @@ if ($text == "/start") {
  'reply_markup'=>json_encode([
      'keyboard'=>[
         [['text'=>"GetProxy"]]
-             ]
-             ])
+        ],'resize_keyboard'=>true])
  ]); 
 }
 //===========================//
@@ -73,12 +72,8 @@ $proxy
  'parse_mode'=>"MarkDown",
  'reply_markup'=>json_encode([
      'keyboard'=>[
-         [
-            
-             ['text'=>"Back"],['text'=>"Reload"]
-             ]
-             ]
-             ])
+         [['text'=>"Back"],['text'=>"Reload"]]
+         ],'resize_keyboard'=>true])
  ]); 
 }
 //=====================//
@@ -90,11 +85,8 @@ if ($text == "Back"){
  'parse_mode'=>"MarkDown",
  'reply_markup'=>json_encode([
      'keyboard'=>[
-        [
-             ['text'=>"GetProxy"]
-             ]
-             ]
-             ])
+        [['text'=>"GetProxy"]]
+        ],'resize_keyboard'=>true])
  ]); 
 }
 //================\\
@@ -106,15 +98,12 @@ if ($text == "Reload"){
 $proxy
 
 ➖➖➖➖➖➖➖➖➖➖➖",
-        'reply_to_message_id' => $message_id2,
+'reply_to_message_id' => $message_id2,
  'parse_mode'=>"MarkDown",
  'reply_markup'=>json_encode([
      'keyboard'=>[
-         [
-             ['text'=>"Back"],['text'=>"Reload"]
-             ]
-             ]
-             ])
+         [['text'=>"Back"],['text'=>"Reload"]]
+         ],'resize_keyboard'=>true])
  ]); 
 }
 
